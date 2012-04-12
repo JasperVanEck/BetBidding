@@ -2,12 +2,13 @@ import java.util.Date;
 
 public class Ticket{
 	private String match;
+	private int outcome;
 	private double prize;
 	private Date date;
 	private int amount;
 	private boolean locked;
 
-	public Ticket(String match, double prize, int amount, Date date)
+	public Ticket(String match, int outcome, double prize, int amount, Date date)
 	{
 		this.match = match;
 		this.prize = prize;
@@ -20,9 +21,10 @@ public class Ticket{
 		}
 		this.date = date;
 		this.locked = false;
+		this.outcome = outcome;
 	}
 
-	public Ticket(String match, double prize, int amount)
+	public Ticket(String match, int outcome, double prize, int amount)
 	{
 		this.match = match;
 		this.prize = prize;
@@ -35,6 +37,7 @@ public class Ticket{
 		}
 		this.date = new Date();
 		this.locked = false;
+		this.outcome = outcome;
 	}
 
 	public int getAmount()
@@ -76,5 +79,10 @@ public class Ticket{
 	{
 		this.locked = false;
 		return this.locked;
+	}
+	
+	public getOutcome()
+	{
+		return this.outcome;
 	}
 }

@@ -1,5 +1,5 @@
 Objecten:
   - Activiteit, koers, welke wedstrijd, mogelijke uitkomsten, definitieve uitslag, datum en tijd, users met een bet, aantal tickets in handel, de queue.
   - User, naam, id, Tickets, geld in account.
-  - Tickets, welke wedstrijd, datum en tijd gekocht, prijs, hoeveelheid.
+  - Tickets, welke wedstrijd, outcome, datum en tijd gekocht, prijs, hoeveelheid, locked.
   - Priority Queue, met de te koop staande tickets, tegen welke prijzen, de key van de queue is de prijs van een ticket.
