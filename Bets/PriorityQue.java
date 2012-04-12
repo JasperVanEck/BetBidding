@@ -55,5 +55,38 @@ public class PriorityQue
 		}
 	}
 	
+	public Ticket dequeue()
+	{
+		return que[size--];
+	}
 	
+	public Ticket peek()
+	{
+		return que[size - 1];
+	}
+	
+	public void insert(Ticket ticket)
+	{
+		ensureCapacity();
+		int i;
+		if (this.size == 0)
+		{
+			this.que[size++] = ticket; // insert at 0
+		}else
+		{
+			for (i = size - 1; i >= 0; i--) // start at end,
+			{
+				if (ticket.getPrize() > que[i].getPrize()) // if new item larger,
+				{
+					que[i + 1] = [i]; // shift upward
+				}else
+				{
+					// if smaller,
+					break; // done shifting
+				}
+			}
+			que[i + 1] = ticket; // insert it
+			size++;
+		} // end else (nItems > 0)
+	}
 }
