@@ -12,7 +12,7 @@ public class User
 		this.name = name;
 		this.userID = userID;
 		this.money = money;
-		this.tickets = new Tickets[DEFAULT_INIT_CAPACITY];
+		this.tickets = new Ticket[64];
 		this.ticketAmount = 0;
 	}
 
@@ -42,7 +42,7 @@ public class User
 		boolean set = true;
 		if(money < 0)
 		{
-			set = false
+			set = false;
 		}else
 		{
 			this.money = money;

@@ -45,7 +45,7 @@ public class Ticket{
 		return this.amount;
 	}
 	
-	public boolean setAmount(amount)
+	public boolean setAmount(int amount)
 	{
 		boolean correct = true;
 		
@@ -71,7 +71,7 @@ public class Ticket{
 	
 	public boolean setLocked()
 	{
-		this.loced = true;
+		this.locked = true;
 		return this.locked;
 	}
 	
@@ -81,7 +81,7 @@ public class Ticket{
 		return this.locked;
 	}
 	
-	public getOutcome()
+	public int getOutcome()
 	{
 		return this.outcome;
 	}
