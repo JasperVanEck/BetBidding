@@ -4,7 +4,7 @@ public class User
 	private int userID;
 	private double money;
 	public static int DEFAULT_INIT_CAPACITY = 16;
-	private Ticket[] tickets;
+	private Ticket[] tickets; //array gaat niet werken, moeten het makkelijk kunnen doorzoeken.
 	private int ticketAmount;
 	
 	public User(String name, int userID, double money)
@@ -68,6 +68,21 @@ public class User
 			added = false;
 		}
 		return added;
+	}
+	
+	public boolean removeTickets()
+	{
+		return false;
+	}
+	
+	public int totalTickets()
+	{
+		int totalTicketAmount = 0;
+		for(int i = 0; i < tickets.length; i++)
+		{
+			totalTicketAmount += tickets[i].getAmount();
+		}
+		return totalTicketAmount;
 	}
 	
 	public boolean isEmpty()

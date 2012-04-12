@@ -5,6 +5,7 @@ public class Ticket{
 	private double prize;
 	private Date date;
 	private int amount;
+	private boolean locked;
 
 	public Ticket(String match, double prize, int amount, Date date)
 	{
@@ -18,6 +19,7 @@ public class Ticket{
 			this.amount = 1;
 		}
 		this.date = date;
+		this.locked = false;
 	}
 
 	public Ticket(String match, double prize, int amount)
@@ -32,6 +34,7 @@ public class Ticket{
 			this.amount = 1;
 		}
 		this.date = new Date();
+		this.locked = false;
 	}
 
 	public int getAmount()
@@ -61,5 +64,17 @@ public class Ticket{
 	public double getPrize()
 	{
 		return this.prize;
+	}
+	
+	public boolean setLocked()
+	{
+		this.loced = true;
+		return this.locked;
+	}
+	
+	public boolean setUnLocked()
+	{
+		this.locked = false;
+		return this.locked;
 	}
 }
