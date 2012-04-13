@@ -23,10 +23,10 @@ public class PriorityQue
 	
 	public int getSize()
 	{
-		int size = null;
+		int size = -1;
 		if(this.size != 0)
 		{
-			size = this.size
+			size = this.size;
 		}
 		return size;
 	}
@@ -78,7 +78,7 @@ public class PriorityQue
 			{
 				if (ticket.getPrize() > que[i].getPrize()) // if new item larger,
 				{
-					que[i + 1] = [i]; // shift upward
+					que[i + 1] = que[i]; // shift upward
 				}else
 				{
 					// if smaller,
