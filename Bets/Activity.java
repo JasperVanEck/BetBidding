@@ -4,13 +4,14 @@ public class Activity
 {
 	private String matchName;
 	private double[] buySellRate;
-	private int[] outcomes;
 	private int result;
 	private String resultString;
 	private Date dateMatch;
 	private int amountUsers;
 	private int amountTickets;
-	public TicketArrayQueue queue;
+	public TicketArrayQueue queueWinHome;
+	public TicketArrayQueue queueWinTie;
+	public TicketArrayQueue queueWinAway;
 	
 	public Activity(String matchName, double[] buySellRate, Date dateMatch)
 	{
@@ -18,10 +19,9 @@ public class Activity
 		this.buySellRate = buySellRate;
 		this.dateMatch = dateMatch;
 		this.outcomes = new int[3];
-		this.outcomes[0] = -1;
-		this.outcomes[1] = 0;
-		this.outcomes[2] = 1;
-		this.queue = new TicketArrayQueue(64);
+		this.queueWinHome = new TicketArrayQueue(64);
+		this.queueWinTie = new TicketArrayQueue(64);
+		this.queueWinAway = new TicketArrayQueue(64);
 	}
 	
 	public String getMatchName()

@@ -1,6 +1,6 @@
 public class TicketArrayQueue extends Object implements TicketQueue{
 	protected Ticket[] arr;
-	public static int DEFAULT_INIT_CAPACITY = 16;
+	public static int DEFAULT_INIT_CAPACITY = 32;
 	protected int front;
 	protected int rear;
 
