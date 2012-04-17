@@ -40,6 +40,16 @@ public class OrderBook
 		}
 	}
 	
+	public Ticket removeTicket(int bidOrAsk, int prizeIndex, int columnIndex)
+	{
+		Ticket ticket = orderBook[prizeIndex][columnIndex].dequeue();
+		while(orderBook[i][columnIndex].isEmpty())
+		{
+			
+		}
+		return ticket;
+	}
+	
 	public void setBidAskRate(int prize, int bidOrAsk, int outcome)
 	{
 		if(bidOrAsk == 0)
@@ -94,7 +104,7 @@ public class OrderBook
 			TicketArrayQueue boughtQueue = new TicketArrayQueue(4);
 			boughtQueue.enqueue(ticket);
 			
-			while(1)
+			while((this.askLow <= ticketPrize && bidOrAsk == 0) || (this.bidHigh >= ticketPrize && bidOrAsk == 1))
 			{
 				if(ticketAmount == ticketAmountTry)
 				{
@@ -104,6 +114,7 @@ public class OrderBook
 				{
 					ticket.setAmount(ticketAmount - ticketAmountTry)
 					ticketAmount = ticket.getAmount();
+					boughtQueue.enqueue(orderBook[prizeIndex][columnIndex].dequeue())
 					ticketTry = orderBook[prizeIndex][columnIndex].front();
 					ticketAmountTry = ticketTry.getAmount();
 				}else
