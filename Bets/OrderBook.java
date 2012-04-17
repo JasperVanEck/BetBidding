@@ -18,7 +18,7 @@ public class OrderBook
 	public OrderBook(String activity)
 	{
 		this.activity = activity;
-		for(int i=0; i<askLow.length; i++)
+		for(int i = 0; i < askLow.length; i++)
 		{
 			this.askLow[i] = 100;
 			this.bidHigh[i]= 0;
@@ -38,7 +38,7 @@ public class OrderBook
 			int prizeIndex = ticket.getPrize();
 			int outcome = ticket.getOutcome();
 			int bidOrAsk = ticket.getBidOrAsk();
-			int columnIndex = outcome * 3 + bidOrAsk;
+			int columnIndex = outcome * 2 + bidOrAsk;
 			setBidAskRate(prizeIndex, bidOrAsk, outcome);
 			orderBook[prizeIndex][columnIndex].enqueue(ticket);
 		}
@@ -47,9 +47,22 @@ public class OrderBook
 	public Ticket removeTicket(int bidOrAsk, int prizeIndex, int columnIndex)
 	{
 		Ticket ticket = orderBook[prizeIndex][columnIndex].dequeue();
-		while(orderBook[i][columnIndex].isEmpty())
+		int i = prizeIndex;
+		
+		if(bidOrAsk == 0)
 		{
-			
+			while(orderBook[i][columnIndex].isEmpty())
+			{
+				i--;
+			}
+			this.bidHigh = i;
+		}else
+		{
+			while(orderBook[i][columnIndex].isEmpty())
+			{
+				i++;
+			}
+			this.askLow = i;
 		}
 		return ticket;
 	}
@@ -87,12 +100,17 @@ public class OrderBook
 	{
 		int ticketPrize = ticket.getPrize();
 		int bidOrAsk = ticket.getBidOrAsk();
+		TicketArrayQueue boughtQueue = new TicketArrayQueue(4);
 		if((this.askLow <= ticketPrize && bidOrAsk == 0) || (this.bidHigh >= ticketPrize && bidOrAsk == 1))
 		{
 			int outcome = ticket.getOutcome();
-			int columnIndex = outcome * 3 + !bidOrAsk;
-			int prizeIndex;
+			int columnIndex = outcome * 2;
+			if(bidOrAsk == 0)
+			{
+				columnIndex + 1;
+			}
 			
+			int prizeIndex;
 			if(bidOrAsk == 0)
 			{
 				prizeIndex = this.bidHigh;
@@ -101,24 +119,30 @@ public class OrderBook
 				prizeIndex = this.askLow;
 			}
 			
-			Ticket ticketTry;
 			int ticketAmount = ticket.getAmount();
-			ticketTry = orderBook[prizeIndex][columnIndex].front();
+			Ticket ticketTry = orderBook[prizeIndex][columnIndex].front();
 			int ticketAmountTry = ticketTry.getAmount();
-			TicketArrayQueue boughtQueue = new TicketArrayQueue(4);
 			boughtQueue.enqueue(ticket);
 			
 			while((this.askLow <= ticketPrize && bidOrAsk == 0) || (this.bidHigh >= ticketPrize && bidOrAsk == 1))
 			{
+				if(bidOrAsk == 0)
+				{
+					prizeIndex = this.bidHigh;
+				}
+				{
+					prizeIndex = this.askLow;
+				}
+				
 				if(ticketAmount == ticketAmountTry)
 				{
-					boughtQueue.enqueue(orderBook[prizeIndex][columnIndex].dequeue());
+					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));
 					break;
 				}else if(ticketAmount > ticketAmountTry)
 				{
-					ticket.setAmount(ticketAmount - ticketAmountTry)
+					ticket.setAmount(ticketAmount - ticketAmountTry);
 					ticketAmount = ticket.getAmount();
-					boughtQueue.enqueue(orderBook[prizeIndex][columnIndex].dequeue())
+					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));//moet nog ff iets komen dat als askLow enzo niet meer kloppen, maar fix morgen wel.
 					ticketTry = orderBook[prizeIndex][columnIndex].front();
 					ticketAmountTry = ticketTry.getAmount();
 				}else
