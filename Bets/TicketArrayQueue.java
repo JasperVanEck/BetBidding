@@ -51,6 +51,12 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 		return arr[front];
 	}
 
+	public Ticket editFront(Ticket ticket)
+	{
+		arr[front] = ticket;
+		return ticket;
+	}
+
 	public boolean isEmpty(){
 		return rear == 0;
 	}

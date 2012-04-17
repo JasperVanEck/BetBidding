@@ -147,15 +147,14 @@ public class Ticket{
 		return this.bidOrAsk;
 	}
 	
+	public String getType()
+	{
+		return this.type;
+	}
+	
 	public String toString()
 	{
 		String output = "wedstrijd " + activity + "\n" + date.toString();
 		return output;
 	}
-	
-	
-	
-	
-	
-	
 }

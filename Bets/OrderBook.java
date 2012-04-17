@@ -24,12 +24,20 @@ public class OrderBook
 	
 	public void addTicket(Ticket ticket)
 	{
-		int prizeIndex = ticket.getPrize();
-		int outcome = ticket.getOutcome();
-		int bidOrAsk = ticket.getBidOrAsk();
-		int columnIndex = outcome * 3 + bidOrAsk;
-		setBidAskRate(prizeIndex, bidOrAsk, outcome);
-		orderBook[prizeIndex][columnIndex].enqueue(ticket);
+		String type = ticket.getType();
+		TicketArrayQueue que = formBidAskMatch(ticket);
+		if(que.isEmpty())
+		{
+			matched = formOutcomeMatch();
+		}else if(!matched)
+		{
+			int prizeIndex = ticket.getPrize();
+			int outcome = ticket.getOutcome();
+			int bidOrAsk = ticket.getBidOrAsk();
+			int columnIndex = outcome * 3 + bidOrAsk;
+			setBidAskRate(prizeIndex, bidOrAsk, outcome);
+			orderBook[prizeIndex][columnIndex].enqueue(ticket);
+		}
 	}
 	
 	public void setBidAskRate(int prize, int bidOrAsk, int outcome)
@@ -61,6 +69,65 @@ public class OrderBook
 		return this.outcome;
 	}
 	
+	public TicketArrayQueue formBidAskMatch(Ticket ticket)
+	{
+		int ticketPrize = ticket.getPrize();
+		int bidOrAsk = ticket.getBidOrAsk();
+		if((this.askLow <= ticketPrize && bidOrAsk == 0) || (this.bidHigh >= ticketPrize && bidOrAsk == 1))
+		{
+			int outcome = ticket.getOutcome();
+			int columnIndex = outcome * 3 + !bidOrAsk;
+			int prizeIndex;
+			
+			if(bidOrAsk == 0)
+			{
+				prizeIndex = this.bidHigh;
+			}
+			{
+				prizeIndex = this.askLow;
+			}
+			
+			Ticket ticketTry;
+			int ticketAmount = ticket.getAmount();
+			ticketTry = orderBook[prizeIndex][columnIndex].front();
+			int ticketAmountTry = ticketTry.getAmount();
+			TicketArrayQueue boughtQueue = new TicketArrayQueue(4);
+			boughtQueue.enqueue(ticket);
+			
+			while(1)
+			{
+				if(ticketAmount == ticketAmountTry)
+				{
+					boughtQueue.enqueue(orderBook[prizeIndex][columnIndex].dequeue());
+					break;
+				}else if(ticketAmount > ticketAmountTry)
+				{
+					ticket.setAmount(ticketAmount - ticketAmountTry)
+					ticketAmount = ticket.getAmount();
+					ticketTry = orderBook[prizeIndex][columnIndex].front();
+					ticketAmountTry = ticketTry.getAmount();
+				}else
+				{
+					Ticket temp = ticketTry;
+					ticketTry.setAmount(ticketAmountTry - ticketAmount)
+					orderBook[prizeIndex][columnIndex].editFront(ticketTry);
+					temp.setAmount(ticketAmount);
+					boughtQueue.enqueue(temp);
+					break;
+				}
+			}
+		}
+		return boughtQueue;
+	}
+	
+	public boolean formOutcomeMatch()
+	{
+		
+		
+		return true;
+	}
+	
+	/*
 	public int getNumberPrize(int prize, String askbid)
 	{
 		int number = 0;
@@ -100,6 +167,6 @@ public class OrderBook
 		}
 		return inserted;
 	}
-	
+	*/
 	
 }
