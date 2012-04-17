@@ -11,15 +11,19 @@ public class OrderBook
 	private TicketArrayQueue[][] orderBook = new TicketArrayQueue[101][6];
 	private int[][] numberArray = new int[101][6];
 	private int outcome;
-	private int[] askLow;
-	private int[] bidHigh;
+	private int[] askLow = new int[3];
+	private int[] bidHigh = new int[3];
 	private String activity;
 	
 	public OrderBook(String activity)
 	{
 		this.activity = activity;
-		this.askLow = {100, 100, 100};
-		this.bidHigh = {0, 0, 0};
+		for(int i=0; i<askLow.length; i++)
+		{
+			this.askLow[i] = 100;
+			this.bidHigh[i]= 0;
+		}
+		
 	}
 	
 	public void addTicket(Ticket ticket)
@@ -54,13 +58,13 @@ public class OrderBook
 	{
 		if(bidOrAsk == 0)
 		{
-			if(prize > bidHigh)
+			if(prize > bidHigh[outcome])
 			{
 				this.bidHigh[outcome] = prize;
 			}
 		}else
 		{
-			if(prize < askLow)
+			if(prize < askLow[outcome])
 			{
 				this.askLow[outcome] = prize;
 			}
