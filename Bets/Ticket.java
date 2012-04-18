@@ -109,6 +109,32 @@ public class Ticket{
 		return correct;
 	}
 	
+	/*
+	 * decrease amount with int amountToRemove
+	 * if you want delete more than there are tickets, set amount too zero
+	 * return true if amount == zero, else false
+	 */
+	public boolean decreaseAmount(int amountToRemove)
+	{
+		if(this.amount >= amountToRemove)
+		{
+			this.amount -= amountToRemove;
+			return true;
+		} else 
+		{
+			this.amount = 0;
+		}
+		
+		if(this.amount ==0)
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
+	
+	
 	public Calendar getDate()
 	{
 		return this.date;
@@ -150,6 +176,11 @@ public class Ticket{
 	public String getType()
 	{
 		return this.type;
+	}
+	
+	public String getUserID()
+	{
+		return this.userId;
 	}
 	
 	public String toString()

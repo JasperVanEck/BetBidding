@@ -1,97 +1,168 @@
+import java.util.HashMap;
+import java.util.Iterator;
+
 public class User
 {
-	private String name;
-	private int userID;
-	private double money;
-	public static int DEFAULT_INIT_CAPACITY = 16;
-	private Ticket[] tickets; //array gaat niet werken, moeten het makkelijk kunnen doorzoeken.
-	private int ticketAmount;
+	private String userID;
+	public HashMap<String, Ticket> ticketsOfUser;
 	
-	public User(String name, int userID, double money)
+	//constructor, adds (the first) ticket
+	public User(Ticket ticket)
 	{
-		this.name = name;
-		this.userID = userID;
-		this.money = money;
-		this.tickets = new Ticket[64];
-		this.ticketAmount = 0;
+		this.userID = ticket.getUserID();
+		addTicket(ticket);
 	}
 
-	public String getName()
+	
+	
+	public String getTicketKey(Ticket ticket)
 	{
-		return this.name;
-	}
-
-	public boolean setName(String name)
-	{
-		this.name = name;
-		return true;
+		return ticket.getActivity() +":" + ticket.getOutcome() + ":" + ticket.getBidOrAsk();
 	}
 	
-	public int getUserID()
+	//add a ticket to the userTicketsHashTable
+	public void addTicket(Ticket ticket)
+	{
+		
+		String activityKey = getTicketKey(ticket);
+		
+		if(checkUserHasActivity(ticket))
+		{
+			removeTicket(activityKey);
+			ticketsOfUser.put(activityKey, ticket);
+		} else
+		{
+			ticketsOfUser.put(activityKey, ticket);
+		}
+	}
+
+	//check if the user has any tickets
+	public boolean isEmpty()
+	{
+		return ticketsOfUser.isEmpty();
+	}
+
+	//get the user id of this ticket hashtable
+	public String getUserID()
 	{
 		return this.userID;
 	}
-	
-	public double getMoney()
+
+	//decrease the amount of tickets of an activity
+	public void removeTicket(String key, int amount)
 	{
-		return this.money;
+		Ticket ticketToRemove = ticketsOfUser.get(key);
+		if(ticketToRemove.decreaseAmount(amount))
+		{
+			//if ticket has amount zero, delete this ticket
+			ticketsOfUser.remove(key);
+		}
 	}
 	
-	public boolean setMoney(double money)
+	//decrease all the tickets of an activity
+	public void removeTicket(String key)
 	{
-		boolean set = true;
-		if(money < 0)
-		{
-			set = false;
-		}else
-		{
-			this.money = money;
-		}
-		return set;
+		ticketsOfUser.remove(key);
 	}
 
-	public double updateMoney(double additive)
+	public boolean checkUserHasActivity(Ticket ticket)
 	{
-		this.money =+ additive;
-		return this.money;
-	}
-	
-	public boolean addTickets(Ticket ticket)
-	{
-		boolean added = true;
-		if(!isEmpty())
+		if(ticketsOfUser.containsKey(getTicketKey(ticket)))
 		{
-			tickets[ticketAmount] = ticket;
-			ticketAmount++;
-		}else
+			return true;
+		} else
 		{
-			added = false;
+			return false;
 		}
-		return added;
 	}
 	
-	public boolean removeTickets()
+	/*
+	 * iterate through the hash table and get sum of amount tickets
+	 * outcome is optional, if you don't care what the outcome is,
+	 * set outcome = -1
+	 */
+	public int getOutStandingOrderTickets(int bidOrAsk, int outcome)
 	{
-		return false;
-	}
-	
-	public int totalTickets()
-	{
-		int totalTicketAmount = 0;
-		for(int i = 0; i < tickets.length; i++)
+		Iterator<String> it = ticketsOfUser.keySet().iterator();
+
+		int totalTickets = 0;
+		//get maxCount
+		while (it.hasNext())
 		{
-			totalTicketAmount += tickets[i].getAmount();
+			String activity = (String) it.next();
+			Ticket ticket = ticketsOfUser.get(activity);
+
+			if(ticket.getBidOrAsk() ==  bidOrAsk && (outcome ==-1 || outcome == ticket.getOutcome()))
+			{
+				totalTickets += ticket.getAmount();
+			}
+		}
+		return totalTickets;
+	}
+
+	/*
+	 * Get total number of tickets, for any outcome
+	 */
+	public int getOutStandingOrderTickets(int bidOrAsk)
+	{
+		return getOutStandingOrderTickets(bidOrAsk, -1);
+	}
+
+	/*
+	 * Get the total value of all the tickets for a certain outcome and bid or ask
+	 */
+	public int getOutStandingOrderAmount(int bidOrAsk, int outcome)
+	{
+		Iterator<String> it = ticketsOfUser.keySet().iterator();
+
+		int totalTicketAmount = 0;
+		//get maxCount
+		while (it.hasNext())
+		{
+			String activity = (String) it.next();
+			Ticket ticket = ticketsOfUser.get(activity);
+
+			if(ticket.getBidOrAsk() ==  bidOrAsk && (outcome ==-1 || outcome == ticket.getOutcome()))
+			{
+				totalTicketAmount += ticket.getAmount() * ticket.getPrize();
+			}
 		}
 		return totalTicketAmount;
 	}
 	
-	public boolean isEmpty()
+	/*
+	 * Get the total value of all the tickets for bid or ask, for any outcome
+	 */
+	public int getOutStandingOrderAmount(int bidOrAsk)
 	{
-		boolean empty = false;
-		if(ticketAmount == 0)
+		return getOutStandingOrderAmount(bidOrAsk, -1);
+	}
+
+	/*
+	 * Get the total price of all the different bid or ask prices
+	 */
+	public int getOutStandingOrderPrice(int bidOrAsk, int outcome)
+	{
+		Iterator<String> it = ticketsOfUser.keySet().iterator();
+
+		int totalTicketPrize = 0;
+		
+		String activity = (String) it.next();
+		Ticket ticket = ticketsOfUser.get(activity);
+
+		if(ticket.getBidOrAsk() ==  bidOrAsk && outcome == ticket.getOutcome())
 		{
-			empty = true;
+			totalTicketPrize += ticket.getPrize();
 		}
-		return empty;
+		
+		return totalTicketPrize;
+	}
+
+	/*
+	 * Check how many tickets this user has
+	 */
+	public int getAmountOfDifferentTickets()
+	{
+		return ticketsOfUser.size();
 	}
 }
