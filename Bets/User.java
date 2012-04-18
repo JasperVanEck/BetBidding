@@ -24,15 +24,15 @@ public class User
 	public void addTicket(Ticket ticket)
 	{
 		
-		String activityKey = getTicketKey(ticket);
+		//String activityKey = getTicketKey(ticket);
 		
 		if(checkUserHasActivity(ticket))
 		{
-			removeTicket(activityKey);
-			ticketsOfUser.put(activityKey, ticket);
+			removeTicket(ticket);
+			ticketsOfUser.put(ticket.getTicketKey(), ticket);
 		} else
 		{
-			ticketsOfUser.put(activityKey, ticket);
+			ticketsOfUser.put(ticket.getTicketKey(), ticket);
 		}
 	}
 
@@ -49,20 +49,21 @@ public class User
 	}
 
 	//decrease the amount of tickets of an activity
-	public void removeTicket(String key, int amount)
+	public void removeTicket(Ticket ticket, int amount)
 	{
-		Ticket ticketToRemove = ticketsOfUser.get(key);
+		
+		Ticket ticketToRemove = ticketsOfUser.get(ticket.getTicketKey());
 		if(ticketToRemove.decreaseAmount(amount))
 		{
 			//if ticket has amount zero, delete this ticket
-			ticketsOfUser.remove(key);
+			ticketsOfUser.remove(ticket.getTicketKey());
 		}
 	}
 	
 	//decrease all the tickets of an activity
-	public void removeTicket(String key)
+	public void removeTicket(Ticket ticket)
 	{
-		ticketsOfUser.remove(key);
+		ticketsOfUser.remove(ticket.getTicketKey());
 	}
 
 	public boolean checkUserHasActivity(Ticket ticket)

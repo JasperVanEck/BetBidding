@@ -84,6 +84,11 @@ public class Ticket{
 		this.outcome = outcome;
 	}
 */
+	public String getTicketKey()
+	{
+		return getActivity() +":" + getOutcome() + ":" + getBidOrAsk();
+	}
+	
 	public String getActivity()
 	{
 		//String activityAndOutcome = this.activity + ":" + outcome;

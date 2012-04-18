@@ -38,6 +38,22 @@ public class UserHashTable
 		}
 	}
 	
+	public void deleteTicket(Ticket ticket, int amount)
+	{
+		if(checkUserExists(ticket.getUserID()))
+		{
+			userHashTable.get(ticket.getUserID()).removeTicket(ticket, amount);
+		}
+	}
+	
+	public void deleteTicket(Ticket ticket)
+	{
+		if(checkUserExists(ticket.getUserID()))
+		{
+			userHashTable.get(ticket.getUserID()).removeTicket(ticket);
+		}
+	}
+	
 	public boolean checkUserExists(String userID)
 	{
 		return userHashTable.containsKey(userID);
