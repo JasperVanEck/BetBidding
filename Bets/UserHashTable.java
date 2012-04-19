@@ -60,11 +60,28 @@ public class UserHashTable
 	}
 	
 	//check if user exists, and it has no more orders
-	public void deleteUser(String userID)
+	public void deleteUser(Ticket ticket)
 	{
-		if(checkUserExists(userID) && userHashTable.get(userID).isEmpty())
+		if(checkUserExists(ticket.getUserID()) && userHashTable.get(ticket.getUserID()).isEmpty())
 		{
-			userHashTable.remove(userID);
+			userHashTable.remove(ticket.getUserID());
 		}
-	}	
+	}
+	
+	//Deze functie is denk het belangrijkst.
+	//Deze functie kijkt of de gebruiker deze order al heeft,
+	//zo ja, return de prijs, ander return -1
+	public int checkUserHasTicketAlready(Ticket ticket)
+	{
+		int prize= -1;
+		
+		if(checkUserExists(ticket.getUserID()) && userHashTable.get(ticket.getUserID()).checkUserHasActivity(ticket))
+		{
+			prize = userHashTable.get(ticket.getUserID()).getPrizeOfActivity(ticket);
+		}
+		
+		return prize;
+	}
+	
+	
 }

@@ -77,6 +77,15 @@ public class User
 		}
 	}
 	
+	public int getPrizeOfActivity(Ticket ticket)
+	{
+		if(ticketsOfUser.containsKey(getTicketKey(ticket)))
+		{
+			return ticketsOfUser.get(getTicketKey(ticket)).getPrize();
+		}
+		return 0;
+	}
+	
 	/*
 	 * iterate through the hash table and get sum of amount tickets
 	 * outcome is optional, if you don't care what the outcome is,
