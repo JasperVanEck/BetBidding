@@ -29,11 +29,13 @@ public class OrderBook
 	public void addTicket(Ticket ticket)
 	{
 		String type = ticket.getType();
+		int ticketAmount = ticket.getAmount();
 		TicketArrayQueue que = formBidAskMatch(ticket);
-		if(que.isEmpty())
+		boolean matched;
+		if((que.size() == 1) && (que.front().getAmount() == ticketAmount))
 		{
-			matched = formOutcomeMatch();
-		}else if(!matched)
+			matched = formOutcomeMatch(ticket);
+		}else if(!matched || (que.front().getAmount() != ticketAmount))
 		{
 			int prizeIndex = ticket.getPrize();
 			int outcome = ticket.getOutcome();
@@ -83,14 +85,7 @@ public class OrderBook
 			}
 		}
 	}
-	/*
-	public OrderBook(int outcome)
-	{
-		this.ticketArray = new TicketArrayQueue[100][2];//(8);
-		this.numberArray = new int[100][2];
-		this.outcome = outcome;
-	}
-	*/
+
 	public int getOutcome()
 	{
 		return this.outcome;
@@ -101,6 +96,7 @@ public class OrderBook
 		int ticketPrize = ticket.getPrize();
 		int bidOrAsk = ticket.getBidOrAsk();
 		TicketArrayQueue boughtQueue = new TicketArrayQueue(4);
+		boughtQueue.enqueue(ticket);
 		if((this.askLow <= ticketPrize && bidOrAsk == 0) || (this.bidHigh >= ticketPrize && bidOrAsk == 1))
 		{
 			int outcome = ticket.getOutcome();
@@ -122,7 +118,6 @@ public class OrderBook
 			int ticketAmount = ticket.getAmount();
 			Ticket ticketTry = orderBook[prizeIndex][columnIndex].front();
 			int ticketAmountTry = ticketTry.getAmount();
-			boughtQueue.enqueue(ticket);
 			
 			while((this.askLow <= ticketPrize && bidOrAsk == 0) || (this.bidHigh >= ticketPrize && bidOrAsk == 1))
 			{
@@ -142,6 +137,7 @@ public class OrderBook
 				{
 					ticket.setAmount(ticketAmount - ticketAmountTry);
 					ticketAmount = ticket.getAmount();
+					boughtQueue.editFront(ticket);
 					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));//moet nog ff iets komen dat als askLow enzo niet meer kloppen, maar fix morgen wel.
 					ticketTry = orderBook[prizeIndex][columnIndex].front();
 					ticketAmountTry = ticketTry.getAmount();
@@ -159,10 +155,39 @@ public class OrderBook
 		return boughtQueue;
 	}
 	
-	public boolean formOutcomeMatch()
+	public boolean formOutcomeMatch(Ticket ticket)
 	{
+		TicketArrayQueue matchQue = new TicketArrayQueue(3);
+		Ticket[] ticketList = new Ticket[3];
+		int bidOrAsk = ticket.getBidOrAsk();
+		int prizeIndex = ticket.getPrize();
+		int outcome = ticket.getOutcome();
+		int columnIndexT = outcome * 2 + bidOrAsk;
+		ticketList[outcome] = ticket;
+		int i = 0;
+		int index;
 		
-		
+		if(bidOrAsk == 0)
+		{
+			while(i < 3)
+			{
+				if(i != outcome)
+				{
+					index = i * 2;
+					ticketList[i] = orderBook[this.bidHigh][index].front();
+				}
+			}
+		}else
+		{
+			while(i < 3)
+			{
+				if(i != outcome)
+				{
+					index = i * 2 + 1;
+					ticketList[i] = orderBook[this.askLow][index].front();
+				}
+			}
+		}
 		return true;
 	}
 	

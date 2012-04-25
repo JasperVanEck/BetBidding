@@ -1,8 +1,25 @@
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import static org.gearman.GearmanJobResult.workSuccessful;
+
+import org.gearman.Gearman;
+import org.gearman.GearmanFunction;
+import org.gearman.GearmanJob;
+import org.gearman.GearmanJobResult;
+import org.gearman.GearmanWorker;
+import org.gearman.core.GearmanConstants;
 
 public class TicketEngine
 {
 	public static void main(String[] args)
 	{
+		Gearman gearman = new Gearman();
+		
+		GearmanWorker worker = gearman.createGearmanWorker();
+		
+		worker.addServer(new InetSocketAddress("localhost", GearmanConstants.DEFAULT_PORT));
+		
 		//Maak het orderbook aan, dit gebeurt maar 1x (in de opzet dat maar 1 prog runt
 		//OrderbookHashTable orderbookHashTable = new OrderbookHashTable();
 		

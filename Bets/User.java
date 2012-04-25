@@ -12,7 +12,6 @@ public class User
 		this.userID = ticket.getUserID();
 		addTicket(ticket);
 	}
-
 	
 	
 	public String getTicketKey(Ticket ticket)
@@ -92,7 +91,7 @@ public class User
 			String activity = (String) it.next();
 			Ticket ticket = ticketsOfUser.get(activity);
 
-			if(ticket.getBidOrAsk() ==  bidOrAsk && (outcome ==-1 || outcome == ticket.getOutcome()))
+			if(ticket.getBidOrAsk() ==  bidOrAsk && (outcome == -1 || outcome == ticket.getOutcome()))
 			{
 				totalTickets += ticket.getAmount();
 			}
