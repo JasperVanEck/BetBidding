@@ -13,6 +13,7 @@ public class Ticket{
 	private String type;
 	private Calendar date;
 	private int amount;
+	private int amountLeft;
 	private boolean locked;
 	private int bidOrAsk;
 
@@ -30,6 +31,7 @@ public class Ticket{
 		this.outcome = lineScanner.nextInt(); 		lineScanner.next();
 		this.prize = lineScanner.nextInt(); 			lineScanner.next();
 		this.amount = lineScanner.nextInt();			lineScanner.next();
+		this.amountLeft = this.amount;
 		String bidOrAsk = lineScanner.next();
 		if(bidOrAsk.equals("bid"))
 		{
@@ -51,39 +53,7 @@ public class Ticket{
 		this.date = new GregorianCalendar(year, month, day, hour, minute, second);
 		lineScanner.close();
 	}
-/*	
-	public Ticket(String match, int outcome, int prize, int amount, Date date)
-	{
-		this.activity = match;
-		this.prize = prize;
-		if(amount >= 0)
-		{
-			this.amount = amount;
-		}else
-		{
-			this.amount = 1;
-		}
-		this.date = date;
-		this.locked = false;
-		this.outcome = outcome;
-	}
 
-	public Ticket(String match, int outcome, int prize, int amount)
-	{
-		this.activity = match;
-		this.prize = prize;
-		if(amount >= 0)
-		{
-			this.amount = amount;
-		}else
-		{
-			this.amount = 1;
-		}
-		this.date = new Date();
-		this.locked = false;
-		this.outcome = outcome;
-	}
-*/
 	public String getTicketKey()
 	{
 		return getActivity() +":" + getOutcome() + ":" + getBidOrAsk();
@@ -102,16 +72,33 @@ public class Ticket{
 	
 	public boolean setAmount(int amount)
 	{
-		boolean correct = true;
+		boolean correct = false;
 		
-		if(amount <= 0){
-			correct = false;
-		}else
-		{
+		if(amount >= 0){
+			correct = true;
 			this.amount = amount;
+			if(this.amountLeft > this.amount)
+			{
+				this.amountLeft = this.amount;
+			}
 		}
-		
 		return correct;
+	}
+	
+	public int getAmountLeft()
+	{
+		return this.amountLeft;
+	}
+	
+	public boolean setAmountLeft(int left)
+	{
+		boolean succes = false;
+		if(left >= 0)
+		{
+			succes = true;
+			this.amountLeft = left;
+		}
+		return succes;
 	}
 	
 	/*

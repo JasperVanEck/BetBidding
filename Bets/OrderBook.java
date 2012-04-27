@@ -91,6 +91,65 @@ public class OrderBook
 		return this.outcome;
 	}
 	
+	public TicketArrayQueue formMarketMatch(Ticket ticket)
+	{
+		TicketArrayQueue boughtQueue = new TicketArrayQueue(4);
+		boughtQueue.enqueue(ticket);
+		int bidOrAsk = ticket.getBidOrAsk();
+		int outcome = ticket.getOutcome();
+		int columnIndex = outcome * 2;
+		if(bidOrAsk == 0)
+		{
+			columnIndex + 1;
+		}
+		
+		int prizeIndex;
+		if(bidOrAsk == 0)
+		{
+			prizeIndex = this.bidHigh;
+		}else
+		{
+			prizeIndex = this.askLow;
+		}
+		
+		Ticket ticketTry = orderBook[prizeIndex][columnIndex].front();
+		int ticketAmountTry = ticket.getAmountLeft();
+		
+		while(ticket.getAmountLeft() != 0)
+		{
+				if(bidOrAsk == 0)
+				{
+					prizeIndex = this.bidHigh;
+				}else
+				{
+					prizeIndex = this.askLow;
+				}
+				
+				if(ticketAmount == ticketAmountTry)
+				{
+					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));
+					ticket.setAmountLeft(ticketAmount - ticketAmountTry);
+				}else if(ticketAmount > ticketAmountTry)
+				{
+					ticket.setAmountLeft(ticketAmount - ticketAmountTry);
+					ticketAmount = ticket.getAmountLeft();
+					boughtQueue.editFront(ticket);
+					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));
+					ticketTry = orderBook[prizeIndex][columnIndex].front();
+					ticketAmountTry = ticketTry.getAmountLeft();
+				}else
+				{
+					Ticket temp = ticketTry;
+					ticketTry.setAmountLeft(ticketAmountTry - ticketAmount);
+					orderBook[prizeIndex][columnIndex].editFront(ticketTry);
+					temp.setAmountLeft(ticketAmount);
+					boughtQueue.enqueue(temp);
+					ticket.setAmountLeft(0);
+				}
+		}
+		return boughtQueue;
+	}
+	
 	public TicketArrayQueue formBidAskMatch(Ticket ticket)
 	{
 		int ticketPrize = ticket.getPrize();
@@ -110,7 +169,7 @@ public class OrderBook
 			if(bidOrAsk == 0)
 			{
 				prizeIndex = this.bidHigh;
-			}
+			}else
 			{
 				prizeIndex = this.askLow;
 			}
@@ -124,7 +183,7 @@ public class OrderBook
 				if(bidOrAsk == 0)
 				{
 					prizeIndex = this.bidHigh;
-				}
+				}else
 				{
 					prizeIndex = this.askLow;
 				}
@@ -132,10 +191,10 @@ public class OrderBook
 				if(ticketAmount == ticketAmountTry)
 				{
 					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));
-					break;
+					ticket.setAmountLeft(ticketAmount - ticketAmountTry);
 				}else if(ticketAmount > ticketAmountTry)
 				{
-					ticket.setAmount(ticketAmount - ticketAmountTry);
+					ticket.setAmountLeft(ticketAmount - ticketAmountTry);
 					ticketAmount = ticket.getAmount();
 					boughtQueue.editFront(ticket);
 					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));//moet nog ff iets komen dat als askLow enzo niet meer kloppen, maar fix morgen wel.
@@ -148,9 +207,14 @@ public class OrderBook
 					orderBook[prizeIndex][columnIndex].editFront(ticketTry);
 					temp.setAmount(ticketAmount);
 					boughtQueue.enqueue(temp);
+					ticket.setAmountLeft(0);
 					break;
 				}
 			}
+		}
+		if(ticket.getAmountLeft() != 0)
+		{
+			orderBook[ticketPrize][].enqueue(ticket);
 		}
 		return boughtQueue;
 	}
@@ -162,7 +226,7 @@ public class OrderBook
 		int bidOrAsk = ticket.getBidOrAsk();
 		int prizeIndex = ticket.getPrize();
 		int outcome = ticket.getOutcome();
-		int columnIndexT = outcome * 2 + bidOrAsk;
+		int columnIndex = outcome * 2 + bidOrAsk;
 		ticketList[outcome] = ticket;
 		int i = 0;
 		int index;
@@ -190,47 +254,4 @@ public class OrderBook
 		}
 		return true;
 	}
-	
-	/*
-	public int getNumberPrize(int prize, String askbid)
-	{
-		int number = 0;
-		if(askbid.equals("bid"))
-		{
-			number = this.numberArray[prize][0];
-		}else if(askbid.equals("ask"))
-		{
-			number = this.numberArray[prize][1];
-		}
-		return number;
-	}
-	
-	public boolean enqueue(Ticket ticket, String askbid)
-	{
-		boolean inserted = false;
-		int prize = ticket.getPrize();
-		int amount = ticket.getAmount();
-		if(askbid.equals("bid"))
-		{
-			orderBook[prize][0].enqueue(ticket);
-			this.numberArray[prize][0] += amount;
-			if(prize > this.bidHigh)
-			{
-				this.bidHigh = prize;
-			}
-			inserted = true;
-		}else if(askbid.equals("ask"))
-		{
-			orderBook[prize][1].enqueue(ticket);
-			this.numberArray[prize][1] += amount;
-			if(prize > this.bidHigh)
-			{
-				this.bidHigh = prize;
-			}
-			inserted = true;
-		}
-		return inserted;
-	}
-	*/
-	
 }

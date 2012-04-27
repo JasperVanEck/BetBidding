@@ -18,7 +18,7 @@ public class TicketEngine
 		
 		GearmanWorker worker = gearman.createGearmanWorker();
 		
-		worker.addServer(new InetSocketAddress("localhost", GearmanConstants.DEFAULT_PORT));
+		worker.addServer(new InetSocketAddress("212.64.153.49", GearmanConstants.DEFAULT_PORT));
 		
 		//Maak het orderbook aan, dit gebeurt maar 1x (in de opzet dat maar 1 prog runt
 		//OrderbookHashTable orderbookHashTable = new OrderbookHashTable();
