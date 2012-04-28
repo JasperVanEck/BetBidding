@@ -10,16 +10,25 @@ import org.gearman.GearmanJobResult;
 import org.gearman.GearmanWorker;
 import org.gearman.core.GearmanConstants;
 
-public class TicketEngine
+public class TicketEngine implements GearmanFunction
 {
+	public static OrderBook orderBook;
+	
 	public static void main(String[] args)
 	{
+		orderBook = new OrderBook(args[0]);
+		
 		Gearman gearman = new Gearman();
 		
 		GearmanWorker worker = gearman.createGearmanWorker();
 		
-		worker.addServer(new InetSocketAddress("212.64.153.49", GearmanConstants.DEFAULT_PORT));
+		worker.addServer(new InetSocketAddress("212.64.153.49", 4730));
 		
+		GearmanWorker worker = gearman.createGearmanWorker();
+		
+		worker.addFunction("ticketHandling", new TicketEngine());
+		
+		worker.addServer(server);
 		//Maak het orderbook aan, dit gebeurt maar 1x (in de opzet dat maar 1 prog runt
 		//OrderbookHashTable orderbookHashTable = new OrderbookHashTable();
 		
@@ -46,4 +55,12 @@ public class TicketEngine
 		}
 		*/
 	}
+	
+	@Override
+	public String work(String function, byte[] data, GearmanFunctionCallback callback) throws Exception
+	{
+		String input = new String(data);
+		Ticket ticket = new Ticket(input);
+		return this.orderBook.addTicket(ticket);
+	} 
 }
