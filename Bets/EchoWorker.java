@@ -67,7 +67,8 @@ public class EchoWorker implements GearmanFunction {
                  * The work method performs the gearman function. In this case, the echo
                  * function simply returns the data it received
                  */
-
+                String output = new String(data);
+		System.out.printf(output);
                 return data;
         }
 
