@@ -33,6 +33,22 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 		return elem;
 	}
 
+	public void deleteTicket(Ticket ticket)
+	{
+		//iterate through tickets.
+		for(int i = front; i <= rear; i++)
+			//if ticket in arr[i] matches userId
+			if(arr[i].getUserID() == ticket.getUserID())
+			{
+				//move all remaining tickets one place up
+				for(int j = i; j < rear; j++)
+				{
+					arr[j] = arr[j+1];
+				}
+				rear--;
+			}
+	}
+	
 	protected void ensureCapacity(){
 		int size = size();
 

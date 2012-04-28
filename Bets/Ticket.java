@@ -102,6 +102,20 @@ public class Ticket{
 	}
 	
 	/*
+	 * This function return a number from 1-6
+	 * win		draw	loss
+	 * bid	ask	bid	ask	bid	ask	
+	 * 1	2	3	4	5	6
+	 * 
+	 */
+	public int getTicketIndex()
+	{
+		return outcome*2 + bidOrAsk;
+	}
+	
+	
+	
+	/*
 	 * decrease amount with int amountToRemove
 	 * if you want delete more than there are tickets, set amount too zero
 	 * return true if amount == zero, else false
