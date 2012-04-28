@@ -9,7 +9,8 @@ public class OrderBook
 	 * -	-		-	-		-	-
 	 */
 	private TicketArrayQueue[][] orderBook = new TicketArrayQueue[101][6];
-	private int[][] numberArray = new int[101][6];
+	private UserHashTable userHashTable;
+	//private int[][] numberArray = new int[101][6];
 	private int outcome;
 	private int[] askLow = new int[3];
 	private int[] bidHigh = new int[3];
@@ -32,7 +33,7 @@ public class OrderBook
 		
 	}
 	
-	public void processTicket(Ticket ticket, UserHashTable userHashTable)
+	public void processTicket(Ticket ticket, UserHashTable userHashTable2)
 	{
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
@@ -41,7 +42,7 @@ public class OrderBook
 	 	 * de wachtrij, en vervolgens worden onderstaande stappen – net als een order van een gebruiker 
 		 * die nog niets in het orderboek – doorlopen.
 		 */
-		 
+		 this.userHashTable = userHashTable2;
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)
 		{
@@ -56,8 +57,8 @@ public class OrderBook
 		 * dan iemand anders). In die gevallen kan er een match tot stand komen, omdat vraag en aanbod 
 		 * dichter bij elkaar zijn gekomen. Is dat niet zo, kan stap 3 overgeslagen worden.
 		 */
-		if(	(ticket.getBidOrAsk()  == ASK && ticket.getPrize() > askLow[ticket.getOutcome()] ) ||
-			(ticket.getBidOrAsk()  == BID && ticket.getPrize() < bidHigh[ticket.getOutcome()]) )
+		if(	(ticket.getBidOrAsk()  == ASK && ticket.getPrice() > askLow[ticket.getOutcome()] ) ||
+			(ticket.getBidOrAsk()  == BID && ticket.getPrice() < bidHigh[ticket.getOutcome()]) )
 		{
 			/* 
 			 * 4. Als er geen match gemaakt kan worden voor de nieuwe order, of de nieuwe order kan niet volledig
@@ -96,6 +97,75 @@ public class OrderBook
 			 * 		én dat de optelsom van de minimale bets per uitkomst gelijk zijn of kleiner dan 100 cent.
 			 */
 			
+			//check if bidprice and askprice and ticket has positive amount
+			while ( bidAskMeets(ticket) && ticket.getAmount() > 0)
+			{
+			 	if(ticket.getBidOrAsk() == ASK )
+			 	{
+			 		Ticket ticket2 = orderBook[bidHigh[ticket.getOutcome()]][ticket.getTicketIndex() -1].front();
+			 		int tradeAmount = getTradeAmount(ticket, ticket2);
+			 		
+			 		System.out.println("handel!!!!!!!!!!!!!!");
+			 		//decrease both tickets with tradeAmount
+			 		ticket.decreaseAmount(tradeAmount);
+			 		ticket2.decreaseAmount(tradeAmount);
+			 		
+			 		//delete amount of ticket2 in userHashTable
+			 		userHashTable.deleteTicket(orderBook[bidHigh[ticket.getOutcome()]][ticket.getTicketIndex() -1].front(), tradeAmount);
+			 		
+			 		if(ticket2.getAmount() == 0)
+			 		{
+			 			orderBook[bidHigh[ticket.getOutcome()]][ticket.getTicketIndex() -1].dequeue();
+			 			
+			 			//check if the queue is now empty
+			 			if(orderBook[bidHigh[ticket.getOutcome()]][ticket.getTicketIndex() -1].isEmpty())
+			 			{
+			 				//set new bidHigh
+			 				setNewBidHigh(ticket.getOutcome(), ticket.getPrice());
+			 			}
+			 		}
+			 		else
+			 		{
+			 			orderBook[bidHigh[ticket.getOutcome()]][ticket.getTicketIndex() -1].editFront(ticket2);
+				 	}
+			 	}
+			 	
+			 	if(ticket.getBidOrAsk() == BID )
+			 	{
+			 		Ticket ticket2 = orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() + 1].front();
+			 		int tradeAmount = getTradeAmount(ticket, ticket2);
+			 		
+			 		//decrease both tickets with tradeAmount
+			 		ticket.decreaseAmount(tradeAmount);
+			 		ticket2.decreaseAmount(tradeAmount);
+			 		
+			 		//delete amount of ticket2 in userHashTable
+			 		userHashTable.deleteTicket(orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() +1].front(), tradeAmount);
+			 		
+			 		if(ticket2.getAmount() == 0)
+			 		{
+			 			orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() +1].dequeue();
+			 			
+			 			//check if the queue is now empty
+			 			if(orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() +1].isEmpty())
+			 			{
+			 				//set new askLow
+			 				setNewAskLow(ticket.getOutcome(), ticket.getPrice());
+			 			}
+			 		}
+			 		else
+			 		{
+			 			orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() +1].editFront(ticket2);
+				 	}
+			 	}
+			 	
+			 	
+			 	
+			 	
+			}
+				  
+			
+			
 			/*3a
 			 * while ( 3a kan)
 			 * {
@@ -119,13 +189,85 @@ public class OrderBook
 			 */
 			
 		}
+	}
+	
+	public void setNewBidHigh(int outcome , int oldHigh)
+	{
+		int newHigh = 0;
+		oldHigh--;
+		while(newHigh == 0)
+		{
+			if(!orderBook[oldHigh][outcome].isEmpty())
+			{
+				newHigh = oldHigh;
+				this.bidHigh[outcome] = newHigh;
+			} else
+			{
+				oldHigh--;
+			}
+		}
+	}
+	
+	public void setNewAskLow(int outcome , int oldLow)
+	{
+		int newLow = 0;
+		oldLow++;
+		while(newLow == 0)
+		{
+			if(!orderBook[oldLow][outcome].isEmpty())
+			{
+				newLow = oldLow;
+				this.bidHigh[outcome] = newLow;
+			} else
+			{
+				oldLow++;
+			}
+		}
+	}
 		
-		
+	
+	
+	//get the minimum of the amounts of both tickets
+	public int getTradeAmount(Ticket ticket1, Ticket ticket2)
+	{
+		if(ticket1.getAmount() > ticket2.getAmount())
+		{
+			return ticket2.getAmount();
+		}
+		else
+		{
+			return ticket1.getAmount();
+		}
+	}
+	
+	//get the minimum of the amounts of all three tickets
+	public int getTradeAmount(Ticket ticket1, Ticket ticket2, Ticket ticket3)
+	{
+		if(ticket1.getAmount() > ticket3.getAmount() && ticket2.getAmount() > ticket3.getAmount())
+		{
+			return ticket3.getAmount();
+		}
+		else
+		{
+			return getTradeAmount(ticket1, ticket2);
+		}
+	}
+	
+	
+	public boolean bidAskMeets(Ticket ticket)
+	{
+		if(	(ticket.getBidOrAsk() == ASK && ticket.getPrice() < bidHigh[ticket.getOutcome()] ) ||
+			(ticket.getBidOrAsk() == BID && ticket.getPrice() > askLow[ticket.getOutcome()] ) )
+		{
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	public void addTicketToOrderBookAndUserHashTable(Ticket ticket, UserHashTable userHashTable)
 	{
-		orderBook[ticket.getPrize()][ticket.getTicketIndex()].enqueue(ticket);
+		orderBook[ticket.getPrice()][ticket.getTicketIndex()].enqueue(ticket);
 		userHashTable.addTicket(ticket);
 	}
 	
@@ -212,21 +354,21 @@ public class OrderBook
 				matched = formOutcomeMatch(ticket);
 			}else if((matched.size() == 1) || (que.front().getAmount() != ticketAmount))
 			{
-				int prizeIndex = ticket.getPrize();
+				int priceIndex = ticket.getPrice();
 				int outcome = ticket.getOutcome();
 				int bidOrAsk = ticket.getBidOrAsk();
 				int columnIndex = outcome * 2 + bidOrAsk;
-				setBidAskRate(prizeIndex, bidOrAsk, outcome);
-				orderBook[prizeIndex][columnIndex].enqueue(ticket);
+				setBidAskRate(priceIndex, bidOrAsk, outcome);
+				orderBook[priceIndex][columnIndex].enqueue(ticket);
 			}
 		}
 		return "ticket";
 	}
 	
-	public Ticket removeTicket(int bidOrAsk, int prizeIndex, int columnIndex)
+	public Ticket removeTicket(int bidOrAsk, int priceIndex, int columnIndex)
 	{
-		Ticket ticket = orderBook[prizeIndex][columnIndex].dequeue();
-		int i = prizeIndex;
+		Ticket ticket = orderBook[priceIndex][columnIndex].dequeue();
+		int i = priceIndex;
 		int outcome = ticket.getOutcome();
 		
 		if(bidOrAsk == 0)
@@ -247,19 +389,19 @@ public class OrderBook
 		return ticket;
 	}
 	
-	public void setBidAskRate(int prize, int bidOrAsk, int outcome)
+	public void setBidAskRate(int price, int bidOrAsk, int outcome)
 	{
 		if(bidOrAsk == 0)
 		{
-			if(prize > bidHigh[outcome])
+			if(price > bidHigh[outcome])
 			{
-				this.bidHigh[outcome] = prize;
+				this.bidHigh[outcome] = price;
 			}
 		}else
 		{
-			if(prize < askLow[outcome])
+			if(price < askLow[outcome])
 			{
-				this.askLow[outcome] = prize;
+				this.askLow[outcome] = price;
 			}
 		}
 	}
@@ -281,46 +423,46 @@ public class OrderBook
 			columnIndex++;
 		}
 		
-		int prizeIndex;
+		int priceIndex;
 		if(bidOrAsk == 0)
 		{
-			prizeIndex = this.bidHigh[outcome];
+			priceIndex = this.bidHigh[outcome];
 		}else
 		{
-			prizeIndex = this.askLow[outcome];
+			priceIndex = this.askLow[outcome];
 		}
 		int ticketAmount = ticket.getAmountLeft();
 		
-		Ticket ticketTry = orderBook[prizeIndex][columnIndex].front();
+		Ticket ticketTry = orderBook[priceIndex][columnIndex].front();
 		int ticketAmountTry = ticket.getAmountLeft();
 		
 		while(ticket.getAmountLeft() != 0)
 		{
 			if(bidOrAsk == 0)
 			{
-				prizeIndex = this.bidHigh[outcome];
+				priceIndex = this.bidHigh[outcome];
 			}else
 			{
-				prizeIndex = this.askLow[outcome];
+				priceIndex = this.askLow[outcome];
 			}
 			
 			if(ticketAmount == ticketAmountTry)
 			{
-				boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));
+				boughtQueue.enqueue(removeTicket(bidOrAsk, priceIndex, columnIndex));
 				ticket.setAmountLeft(ticketAmount - ticketAmountTry);
 			}else if(ticketAmount > ticketAmountTry)
 			{
 				ticket.setAmountLeft(ticketAmount - ticketAmountTry);
 				ticketAmount = ticket.getAmountLeft();
 				boughtQueue.editFront(ticket);
-				boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));
-				ticketTry = orderBook[prizeIndex][columnIndex].front();
+				boughtQueue.enqueue(removeTicket(bidOrAsk, priceIndex, columnIndex));
+				ticketTry = orderBook[priceIndex][columnIndex].front();
 				ticketAmountTry = ticketTry.getAmountLeft();
 			}else
 			{
 				Ticket temp = ticketTry;
 				ticketTry.setAmountLeft(ticketAmountTry - ticketAmount);
-				orderBook[prizeIndex][columnIndex].editFront(ticketTry);
+				orderBook[priceIndex][columnIndex].editFront(ticketTry);
 				temp.setAmountLeft(ticketAmount);
 				boughtQueue.enqueue(temp);
 				ticket.setAmountLeft(0);
@@ -331,12 +473,12 @@ public class OrderBook
 	
 	public TicketArrayQueue formBidAskMatch(Ticket ticket)
 	{
-		int ticketPrize = ticket.getPrize();
+		int ticketPrice = ticket.getPrice();
 		int bidOrAsk = ticket.getBidOrAsk();
 		TicketArrayQueue boughtQueue = new TicketArrayQueue(4);
 		boughtQueue.enqueue(ticket);
 		int outcome = ticket.getOutcome();
-		if((this.askLow[outcome] <= ticketPrize && bidOrAsk == 0) || (this.bidHigh[outcome] >= ticketPrize && bidOrAsk == 1))
+		if((this.askLow[outcome] <= ticketPrice && bidOrAsk == 0) || (this.bidHigh[outcome] >= ticketPrice && bidOrAsk == 1))
 		{
 			int columnIndex = outcome * 2;
 			if(bidOrAsk == 0)
@@ -344,46 +486,46 @@ public class OrderBook
 				columnIndex++;
 			}
 			
-			int prizeIndex;
+			int priceIndex;
 			if(bidOrAsk == 0)
 			{
-				prizeIndex = this.bidHigh[outcome];
+				priceIndex = this.bidHigh[outcome];
 			}else
 			{
-				prizeIndex = this.askLow[outcome];
+				priceIndex = this.askLow[outcome];
 			}
 			
 			int ticketAmount = ticket.getAmount();
-			Ticket ticketTry = orderBook[prizeIndex][columnIndex].front();
+			Ticket ticketTry = orderBook[priceIndex][columnIndex].front();
 			int ticketAmountTry = ticketTry.getAmount();
 			
-			while((this.askLow[outcome] <= ticketPrize && bidOrAsk == 0) || (this.bidHigh[outcome] >= ticketPrize && bidOrAsk == 1))
+			while((this.askLow[outcome] <= ticketPrice && bidOrAsk == 0) || (this.bidHigh[outcome] >= ticketPrice && bidOrAsk == 1))
 			{
 				if(bidOrAsk == 0)
 				{
-					prizeIndex = this.bidHigh[outcome];
+					priceIndex = this.bidHigh[outcome];
 				}else
 				{
-					prizeIndex = this.askLow[outcome];
+					priceIndex = this.askLow[outcome];
 				}
 				
 				if(ticketAmount == ticketAmountTry)
 				{
-					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));
+					boughtQueue.enqueue(removeTicket(bidOrAsk, priceIndex, columnIndex));
 					ticket.setAmountLeft(ticketAmount - ticketAmountTry);
 				}else if(ticketAmount > ticketAmountTry)
 				{
 					ticket.setAmountLeft(ticketAmount - ticketAmountTry);
 					ticketAmount = ticket.getAmount();
 					boughtQueue.editFront(ticket);
-					boughtQueue.enqueue(removeTicket(bidOrAsk, prizeIndex, columnIndex));//moet nog ff iets komen dat als askLow enzo niet meer kloppen, maar fix morgen wel.
-					ticketTry = orderBook[prizeIndex][columnIndex].front();
+					boughtQueue.enqueue(removeTicket(bidOrAsk, priceIndex, columnIndex));//moet nog ff iets komen dat als askLow enzo niet meer kloppen, maar fix morgen wel.
+					ticketTry = orderBook[priceIndex][columnIndex].front();
 					ticketAmountTry = ticketTry.getAmount();
 				}else
 				{
 					Ticket temp = ticketTry;
 					ticketTry.setAmount(ticketAmountTry - ticketAmount);
-					orderBook[prizeIndex][columnIndex].editFront(ticketTry);
+					orderBook[priceIndex][columnIndex].editFront(ticketTry);
 					temp.setAmount(ticketAmount);
 					boughtQueue.enqueue(temp);
 					ticket.setAmountLeft(0);
@@ -398,7 +540,7 @@ public class OrderBook
 			{
 				col++;
 			}
-			orderBook[ticketPrize][col].enqueue(ticket);
+			orderBook[ticketPrice][col].enqueue(ticket);
 		}
 		return boughtQueue;
 	}
@@ -408,7 +550,7 @@ public class OrderBook
 		TicketArrayQueue matchQue = new TicketArrayQueue(3);
 		Ticket[] ticketList = new Ticket[3];
 		int bidOrAsk = ticket.getBidOrAsk();
-		int prizeIndex = ticket.getPrize();
+		int priceIndex = ticket.getPrice();
 		int outcome = ticket.getOutcome();
 		int columnIndex = outcome * 2 + bidOrAsk;
 		ticketList[outcome] = ticket;
