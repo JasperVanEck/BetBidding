@@ -1,14 +1,11 @@
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import static org.gearman.GearmanJobResult.workSuccessful;
+//import java.io.IOException;
+//import java.net.InetSocketAddress;
 
 import org.gearman.Gearman;
 import org.gearman.GearmanFunction;
-import org.gearman.GearmanJob;
-import org.gearman.GearmanJobResult;
 import org.gearman.GearmanWorker;
-import org.gearman.core.GearmanConstants;
+import org.gearman.GearmanFunctionCallback;
+import org.gearman.GearmanServer;
 
 public class TicketEngine implements GearmanFunction
 {
@@ -18,13 +15,11 @@ public class TicketEngine implements GearmanFunction
 	{
 		orderBook = new OrderBook(args[0]);
 		
-		Gearman gearman = new Gearman();
+		Gearman gearman = Gearman.createGearman();
 		
 		GearmanWorker worker = gearman.createGearmanWorker();
 		
-		worker.addServer(new InetSocketAddress("212.64.153.49", 4730));
-		
-		GearmanWorker worker = gearman.createGearmanWorker();
+		GearmanServer server = gearman.createGearmanServer("212.64.153.49", 4730);
 		
 		worker.addFunction("ticketHandling", new TicketEngine());
 		
@@ -57,10 +52,11 @@ public class TicketEngine implements GearmanFunction
 	}
 	
 	@Override
-	public String work(String function, byte[] data, GearmanFunctionCallback callback) throws Exception
+	public byte[] work(String function, byte[] data, GearmanFunctionCallback callback) throws Exception
 	{
 		String input = new String(data);
 		Ticket ticket = new Ticket(input);
-		return this.orderBook.addTicket(ticket);
+		String output = this.orderBook.addTicket(ticket);
+		return data;
 	} 
 }

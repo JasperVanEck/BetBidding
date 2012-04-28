@@ -36,7 +36,7 @@ public class OrderBook
 		}else
 		{
 			TicketArrayQueue que = formBidAskMatch(ticket);
-			TicketArrayQueue matched;
+			TicketArrayQueue matched = new TicketArrayQueue(4);
 			if((que.size() == 1) && (que.front().getAmount() == ticketAmount))
 			{
 				matched = formOutcomeMatch(ticket);
@@ -266,6 +266,6 @@ public class OrderBook
 				}
 			}
 		}
-		return true;
+		return matchQue;
 	}
 }
