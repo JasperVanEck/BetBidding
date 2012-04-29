@@ -11,7 +11,7 @@ public class Ticket{
 	private String userId;
 	private int price;
 	private String type;
-	private Calendar date;
+	private GregorianCalendar date;
 	private int amount;
 	private int amountLeft;
 	private boolean locked;
@@ -53,6 +53,22 @@ public class Ticket{
 		this.date = new GregorianCalendar(year, month, day, hour, minute, second);
 		lineScanner.close();
 	}
+	
+	public Ticket(String activity, String type, String userID, int outcome, int price, int amount, int bidOrAsk, int date)
+	{
+		this.activity = activity;
+		this.type = type;
+		this.userId = userID;
+		this.outcome = outcome;
+		this.price = price;
+		this.amount = amount;
+		this.amountLeft = this.amount;
+		this.bidOrAsk = bidOrAsk;
+		this.date = new GregorianCalendar(date, date, date, date, date, date);
+		
+	
+		}
+	
 
 	public String getTicketKey()
 	{
@@ -141,7 +157,7 @@ public class Ticket{
 	}
 	
 	
-	public Calendar getDate()
+	public GregorianCalendar getDate()
 	{
 		return this.date;
 	}
