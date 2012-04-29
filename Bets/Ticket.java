@@ -21,6 +21,7 @@ public class Ticket{
 	{	//{ activity: Nederland-Duitsland, type: limit, userid: USER6786, outcome: 2, bet: 87, tickets: 5, bidask: ask, time: 01:02:03:04:05:06 }
 		
 		//{ activity: activity, type: type, userid: userid, outcome: outcome, bet: bet, tickets: tickets, bidask: bidask, time: time }
+		try{
 		Scanner lineScanner = new Scanner(stringToParse).useDelimiter("\\s*[{,:}]\\s*");
 		
 		lineScanner.next();
@@ -52,6 +53,9 @@ public class Ticket{
 		int second = lineScanner.nextInt();
 		this.date = new GregorianCalendar(year, month, day, hour, minute, second);
 		lineScanner.close();
+		}catch(Exception e){
+			System.out.printf(e.getMessage());
+		}
 	}
 	
 	public Ticket(String activity, String type, String userID, int outcome, int price, int amount, int bidOrAsk, int date)
