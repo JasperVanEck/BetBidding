@@ -38,6 +38,23 @@ public class OrderBook
 		return this.activity;
 	}
 	
+	public String getKoers(String bidOrAsk)
+	{
+		String koers;
+		if(bidOrAsk.equals("bid"))
+		{
+			koers = "{" + bidHigh[0]+", "+bidHigh[1]+", "+bidHigh[2]+"}";
+		} else if(bidOrAsk.equals("ask"))
+		{
+			koers = "{" + askLow[0]+", "+askLow[1]+", "+askLow[2]+"}";
+		} else
+		{
+			koers = "error, geen bid or ask gevraagd";
+		}
+		return koers;
+	}
+	
+	
 	//This function sets the advantage to first or last
 	public void setAdvantage(String advantage)
 	{
@@ -55,7 +72,8 @@ public class OrderBook
 	public void processTicket(Ticket ticket, UserHashTable userHashTable2)
 	{
 		this.userHashTable = userHashTable2;
-		/**
+
+		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
 		 * bestaande order. Concreet betekend dit dat de al bestaande order verwijderd zal worden uit 
@@ -69,7 +87,17 @@ public class OrderBook
 			deleteTicket(ticket);
 		}
 		
-		/**
+		//extra, check of het een market deal is.. dan maakt de prijs niet uit.. dus  niet onderstaande stappen doorlopen.
+		if(ticket.getType().equals("market"))
+		{
+			while(marketMatchPresent(ticket))
+			{
+				ticket = doBidAskMeetsTransactions(ticket);
+			}
+		} else
+		
+		
+		/*
 		 * 2. De engine checkt of de nieuwe order beter is dan een ander al bestaand bod in het 
 		 * orderboek. Dat is het geval als een bid-bod een hogere bet heeft dan de maximale bidprijs 
 		 * in het orderboek (de user is bereid meer te betalen dan iemand anders), of als een ask-bod 
@@ -77,10 +105,13 @@ public class OrderBook
 		 * dan iemand anders). In die gevallen kan er een match tot stand komen, omdat vraag en aanbod 
 		 * dichter bij elkaar zijn gekomen. Is dat niet zo, kan stap 3 overgeslagen worden.
 		 */
+		
+		
+		
 		if(	(ticket.getBidOrAsk()  == ASK && ticket.getPrice() > askLow[ticket.getOutcome()] ) ||
 			(ticket.getBidOrAsk()  == BID && ticket.getPrice() < bidHigh[ticket.getOutcome()]) )
 		{
-			/** 
+			/* 
 			 * 4. Als er geen match gemaakt kan worden voor de nieuwe order, of de nieuwe order kan niet volledig
 			 * vervuld worden met behulp van de bestaande orders in het orderboek, dan kan deze order (of het
 			 * resterende deel ervan) in het orderboek (wachtrij) geplaatst worden.
@@ -89,7 +120,7 @@ public class OrderBook
 			
 		} else
 		{
-			/**
+			/*
 			 * 3. De nieuwe order is beter, dus het heeft zin om te kijken of er nu wel een match gemaakt kan
 			 * worden. 
 			 * 	a. De engine checkt vervolgens eerst of dit nieuwe bod een match tot stand kan brengen met
@@ -159,6 +190,41 @@ public class OrderBook
 		
 	}
 
+	public Ticket doMarketTransactions(Ticket ticket1)
+	{
+		Ticket ticket2;
+		if(ticket1.getOutcome() == BID)
+		{
+			ticket2  = orderBook[askLow[ticket1.getOutcome()]][ticket1.getTicketIndex()+1].front();
+			
+			int tradeAmount = getTradeAmount(ticket1, ticket2);
+			ticket1.decreaseAmount(tradeAmount);
+			ticket1.decreaseAmount(tradeAmount);
+		} else
+		//if(ticket1.getOutcome() == ASK)
+		{
+			ticket2  = orderBook[bidHigh[ticket1.getOutcome()]][ticket1.getTicketIndex()-1].front();
+		} 
+			
+	
+		
+		return ticket1;
+	}
+	
+	
+	//check if a market deal can be made
+	public boolean marketMatchPresent(Ticket ticket)
+	{
+		if( (ticket.getAmount() > 0 && ticket.getBidOrAsk() == BID && bidHigh[ticket.getOutcome()] > 0) ||
+			(ticket.getAmount() > 0 && ticket.getBidOrAsk() == ASK && askLow[ticket.getOutcome()] < 100))		
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
+	
 	//This function checks if there is an ask-Match possible
 	public boolean askMatchPresent(Ticket ticket)
 	{
@@ -221,8 +287,7 @@ public class OrderBook
 	{
 		int[] tempBidHigh = bidHigh;
 		tempBidHigh[ticket.getOutcome()] = ticket.getPrice();
-		if(getSumArray(tempBidHigh) >= 100)
-		{
+	
 			Ticket ticket1 = ticket;
 			Ticket ticket2;
 			Ticket ticket3;
@@ -272,8 +337,8 @@ public class OrderBook
 				//delete amount ticket 3 from orderbook
 				removeTicketAmountFromOrderBook(ticket3);
 			}
-	 	}
-		return ticket;
+	 	
+		return ticket1;
 	}
 	
 	//This function returns the ticket which has the advantage
