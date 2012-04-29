@@ -9,7 +9,7 @@ public class Ticket{
 	private String outcome2;
 	private int outcome;
 	private String userId;
-	private int prize;
+	private int price;
 	private String type;
 	private Calendar date;
 	private int amount;
@@ -29,7 +29,7 @@ public class Ticket{
 		this.type = lineScanner.next(); 								lineScanner.next();
 		this.userId = lineScanner.next(); 							lineScanner.next();
 		this.outcome = lineScanner.nextInt(); 		lineScanner.next();
-		this.prize = lineScanner.nextInt(); 			lineScanner.next();
+		this.price = lineScanner.nextInt(); 			lineScanner.next();
 		this.amount = lineScanner.nextInt();			lineScanner.next();
 		this.amountLeft = this.amount;
 		String bidOrAsk = lineScanner.next();
@@ -152,9 +152,9 @@ public class Ticket{
 		return date_format.format(this.date.getTime());
 	}
 	
-	public int getPrize()
+	public int getPrice()
 	{
-		return this.prize;
+		return this.price;
 	}
 	
 	public boolean setLocked()
