@@ -9,9 +9,9 @@ public class Ticket{
 	private String outcome2;
 	private int outcome;
 	private String userId;
-	private int prize;
+	private int price;
 	private String type;
-	private Calendar date;
+	private GregorianCalendar date;
 	private int amount;
 	private int amountLeft;
 	private boolean locked;
@@ -29,7 +29,7 @@ public class Ticket{
 		this.type = lineScanner.next(); 								lineScanner.next();
 		this.userId = lineScanner.next(); 							lineScanner.next();
 		this.outcome = lineScanner.nextInt(); 		lineScanner.next();
-		this.prize = lineScanner.nextInt(); 			lineScanner.next();
+		this.price = lineScanner.nextInt(); 			lineScanner.next();
 		this.amount = lineScanner.nextInt();			lineScanner.next();
 		this.amountLeft = this.amount;
 		String bidOrAsk = lineScanner.next();
@@ -53,6 +53,22 @@ public class Ticket{
 		this.date = new GregorianCalendar(year, month, day, hour, minute, second);
 		lineScanner.close();
 	}
+	
+	public Ticket(String activity, String type, String userID, int outcome, int price, int amount, int bidOrAsk, int date)
+	{
+		this.activity = activity;
+		this.type = type;
+		this.userId = userID;
+		this.outcome = outcome;
+		this.price = price;
+		this.amount = amount;
+		this.amountLeft = this.amount;
+		this.bidOrAsk = bidOrAsk;
+		this.date = new GregorianCalendar(date, date, date, date, date, date);
+		
+	
+		}
+	
 
 	public String getTicketKey()
 	{
@@ -141,7 +157,7 @@ public class Ticket{
 	}
 	
 	
-	public Calendar getDate()
+	public GregorianCalendar getDate()
 	{
 		return this.date;
 	}
@@ -152,9 +168,9 @@ public class Ticket{
 		return date_format.format(this.date.getTime());
 	}
 	
-	public int getPrize()
+	public int getPrice()
 	{
-		return this.prize;
+		return this.price;
 	}
 	
 	public boolean setLocked()
