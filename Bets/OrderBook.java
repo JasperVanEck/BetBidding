@@ -54,13 +54,17 @@ public class OrderBook
 	//This function processes an order
 	public void processTicket(Ticket ticket, UserHashTable userHashTable2)
 	{
+<<<<<<< HEAD
 		this.userHashTable = userHashTable2;
 		/*
+=======
+		/**
+>>>>>>> b0bb3dde81833dd38f37b56cd753f296dc8e9bb1
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
 		 * bestaande order. Concreet betekend dit dat de al bestaande order verwijderd zal worden uit 
-	 	 * de wachtrij, en vervolgens worden onderstaande stappen – net als een order van een gebruiker 
-		 * die nog niets in het orderboek – doorlopen.
+	 	 * de wachtrij, en vervolgens worden onderstaande stappen - net als een order van een gebruiker 
+		 * die nog niets in het orderboek - doorlopen.
 		 */
 		 
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
@@ -69,7 +73,7 @@ public class OrderBook
 			deleteTicket(ticket);
 		}
 		
-		/*
+		/**
 		 * 2. De engine checkt of de nieuwe order beter is dan een ander al bestaand bod in het 
 		 * orderboek. Dat is het geval als een bid-bod een hogere bet heeft dan de maximale bidprijs 
 		 * in het orderboek (de user is bereid meer te betalen dan iemand anders), of als een ask-bod 
@@ -80,7 +84,7 @@ public class OrderBook
 		if(	(ticket.getBidOrAsk()  == ASK && ticket.getPrice() > askLow[ticket.getOutcome()] ) ||
 			(ticket.getBidOrAsk()  == BID && ticket.getPrice() < bidHigh[ticket.getOutcome()]) )
 		{
-			/* 
+			/** 
 			 * 4. Als er geen match gemaakt kan worden voor de nieuwe order, of de nieuwe order kan niet volledig
 			 * vervuld worden met behulp van de bestaande orders in het orderboek, dan kan deze order (of het
 			 * resterende deel ervan) in het orderboek (wachtrij) geplaatst worden.
@@ -89,7 +93,7 @@ public class OrderBook
 			
 		} else
 		{
-			/*
+			/**
 			 * 3. De nieuwe order is beter, dus het heeft zin om te kijken of er nu wel een match gemaakt kan
 			 * worden. 
 			 * 	a. De engine checkt vervolgens eerst of dit nieuwe bod een match tot stand kan brengen met
@@ -104,6 +108,26 @@ public class OrderBook
 			 * 	b. Als dat niet kan, of slechts een deel van de nieuwe order is op deze manier gematcht,
 			 * 	dan checkt de engine of er een match tot stand kan worden gebracht met anderen uit dezelfde
 			 * 	orderboek-zijde.
+<<<<<<< HEAD
+=======
+			 * 		i. Voor de bid-zijde kan dat, als de optelsom van maximale bets (prijzen) van elke
+			 * 		outcome, optelt tot 100 cent of meer. Dus: user x is bereid 60 cent te betalen voor
+			 * 		'Nederland wint', user y 30 cent voor 'Duitsland wint', en user z 10 cent voor
+			 * 		'Gelijkspel'. Samen bieden ze exact 100 cent, dus kan er een match tot stand worden 
+			 * 		gebracht aan de bid-zijde. Er hoeft geen bod te zijn op alle uitkomsten. Theoretisch
+			 * 		zou iemand dus 100 cent op 'Nederland' kunnen bieden, waarbij er een 'match' tot stand
+			 * 		komt. Zo lang de 100 cent maar gehaald wordt. In het geval dat niet elke outcome
+			 * 		vertegenwoordigd is in de match, gaan de tickets die gecreeerd worden op de
+			 * 		niet-vertegenwoordigde outcomes in 'onze pot'.
+			 * 		ii. Voor de ask-zijde kan dat, als de optelsom van minimale bets (prijzen) van elke
+			 * 		outcome, optelt tot 100 cent of minder. Dus: user x is bereid 60 cent te betalen voor
+			 * 		'Nederland wint', user y 25 cent voor 'Duitsland wint', en user z 10 cent voor
+			 * 		'Gelijkspel'. Samen bieden ze 95 cent, dus kan er een match tot stand worden gebracht
+			 * 		aan de ask-zijde. Belangrijk hierbij is dat - itt tot bij de bid-zijde - hier alle 
+			 * 		outcomes vertegenwoordigd moeten zijn. Een match aan de ask-zijde kan dus alleen tot 
+			 * 		stand komen als er en op alle mogelijke uitkomsten een user zijn tickets wil verkopen,
+			 * 		en dat de optelsom van de minimale bets per uitkomst gelijk zijn of kleiner dan 100 cent.
+>>>>>>> b0bb3dde81833dd38f37b56cd753f296dc8e9bb1
 			 */
 				/*
 				 *	i. Voor de bid-zijde kan dat, als de optelsom van maximale bets (prijzen) van elke
