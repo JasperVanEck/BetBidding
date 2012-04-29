@@ -1,1 +1,4 @@
 Dit is de README voor de BetBidding engine.
+
+Compile met: 
+javac -cp "java-gearman-service-0.6.jar" OrderBook.java TicketEngine.java Ticket.java UserHashTable.java User.java TicketArrayQueue.java TicketQueue.java
