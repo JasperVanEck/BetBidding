@@ -72,7 +72,6 @@ public class OrderBook
 	public void processTicket(Ticket ticket, UserHashTable userHashTable2)
 	{
 		this.userHashTable = userHashTable2;
-
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
@@ -84,16 +83,20 @@ public class OrderBook
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)
 		{
+			System.out.printf("Ticket proberen te deleten\n");
 			deleteTicket(ticket);
+			System.out.printf("Ticket deleted\n");
 		}
 		
 		//extra, check of het een market deal is.. dan maakt de prijs niet uit.. dus  niet onderstaande stappen doorlopen.
 		if(ticket.getType().equals("market"))
 		{
+			System.out.printf(" doBidAskMeetsTransactions proberen te maken\n"); 
 			while(marketMatchPresent(ticket))
 			{
 				ticket = doBidAskMeetsTransactions(ticket);
 			}
+			System.out.printf("bidAskMeetsTransactions done\n");
 		} else
 		
 		
@@ -116,8 +119,10 @@ public class OrderBook
 			 * vervuld worden met behulp van de bestaande orders in het orderboek, dan kan deze order (of het
 			 * resterende deel ervan) in het orderboek (wachtrij) geplaatst worden.
 			 */
-			addTicketToOrderBookAndUserHashTable(ticket, userHashTable);
 			
+			System.out.printf("ticket in orderBook proberen te stoppen\n");
+			addTicketToOrderBookAndUserHashTable(ticket, userHashTable);
+			System.out.printf("ticket added to orderBook\n");
 		} else
 		{
 			/*
@@ -127,10 +132,12 @@ public class OrderBook
 			 * 	een order van de andere orderboek-zijde. Dus bij een bid-bod van 75 cent, wordt eerst 
 			 * 	gecheckt of er een ask-bod van 75 cent of lager tegenover staat. 
 			 */
+			System.out.printf("order was beter, match proberen\n"); 
 			while ( bidAskMeets(ticket) && ticket.getAmount() > 0)
 			{
 			 	ticket = doBidAskMeetsTransactions(ticket);	
 			}
+			System.out.printf("Order was beter, match gemaakt.\n ");
 			/*
 			 * 	b. Als dat niet kan, of slechts een deel van de nieuwe order is op deze manier gematcht,
 			 * 	dan checkt de engine of er een match tot stand kan worden gebracht met anderen uit dezelfde
@@ -164,11 +171,13 @@ public class OrderBook
 				 * 	vertegenwoordigd is in de match, gaan de tickets die gecreeerd worden op de
 				 * 	niet-vertegenwoordigde outcomes in 'onze pot'.
 				 */
+				
+				System.out.printf("tickets creeeren\n");
 				while(bidMatchPresent(ticket) && ticket.getAmount() > 0 && ticket.getBidOrAsk() == BID)
 				{
 					ticket = doBidMatchTransactions(ticket);
 				}
-				
+				System.out.printf("tickets gecreeerd\n");
 				/* 
 				 * 		ii. Voor de ask-zijde kan dat, als de optelsom van minimale bets (prijzen) van elke
 				 * 		outcome, optelt tot 100 cent of minder. Dus: user x is bereid 60 cent te betalen voor
@@ -179,15 +188,19 @@ public class OrderBook
 				 * 		stand komen als er en op alle mogelijke uitkomsten een user zijn tickets wil verkopen,
 				 * 		en dat de optelsom van de minimale bets per uitkomst gelijk zijn of kleiner dan 100 cent.
 				 */
+				
+				System.out.printf("tickets in nemen");
 				while(askMatchPresent(ticket) && ticket.getAmount() > 0 && ticket.getBidOrAsk() == ASK)
 				{
 					ticket = doAskMatchTransactions(ticket);
 				}
-						
+				
+				System.out.printf("tickets ingenomen");
 		}
 		//add remaining tickets to orderBook, and userHashTable
+		System.out.printf("adding remaining tickets to orderBook en hashtabel\n");
 		addTicketToOrderBookAndUserHashTable(ticket, userHashTable);
-		
+		System.out.printf("added remaining to orderBook en hashtabel");
 	}
 
 	public Ticket doMarketTransactions(Ticket ticket1)

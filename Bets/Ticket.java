@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 public class Ticket{
 	private String activity;
-	private String outcome2;
 	private int outcome;
 	private String userId;
 	private int price;
@@ -22,14 +21,14 @@ public class Ticket{
 		
 		//{ activity: activity, type: type, userid: userid, outcome: outcome, bet: bet, tickets: tickets, bidask: bidask, time: time }
 		try{
-		Scanner lineScanner = new Scanner(stringToParse).useDelimiter("\\s*[{,:}]\\s*");
+		Scanner lineScanner = new Scanner(stringToParse).useDelimiter("\\s*[{,:}]\\\\/\\s*");
 		
 		lineScanner.next();
 		
-		this.activity = lineScanner.next();							lineScanner.next();
-		this.type = lineScanner.next(); 								lineScanner.next();
-		this.userId = lineScanner.next(); 							lineScanner.next();
-		this.outcome = lineScanner.nextInt(); 		lineScanner.next();
+		this.activity = lineScanner.next();			lineScanner.next();
+		//this.type = lineScanner.next(); 			lineScanner.next();
+		this.userId = lineScanner.next(); 			lineScanner.next();
+		this.outcome = lineScanner.nextInt(); 			lineScanner.next();
 		this.price = lineScanner.nextInt(); 			lineScanner.next();
 		this.amount = lineScanner.nextInt();			lineScanner.next();
 		this.amountLeft = this.amount;
@@ -45,9 +44,9 @@ public class Ticket{
 		lineScanner.next();
 		
 		
-		int year = lineScanner.nextInt();
-		int month = lineScanner.nextInt();
 		int day = lineScanner.nextInt();
+		int month = lineScanner.nextInt();
+		int year = lineScanner.nextInt();
 		int hour = lineScanner.nextInt();
 		int minute = lineScanner.nextInt();
 		int second = lineScanner.nextInt();
@@ -58,7 +57,7 @@ public class Ticket{
 		}
 	}
 	
-	public Ticket(String activity, String type, String userID, int outcome, int price, int amount, int bidOrAsk, int date)
+	public Ticket(String activity, String type, int userID, int outcome, int price, int amount, int bidOrAsk, int date)
 	{
 		this.activity = activity;
 		this.type = type;
@@ -130,7 +129,7 @@ public class Ticket{
 	 */
 	public int getTicketIndex()
 	{
-		return outcome*2 + bidOrAsk;
+		return outcome * 2 + bidOrAsk;
 	}
 	
 	
@@ -204,7 +203,7 @@ public class Ticket{
 		return this.type;
 	}
 	
-	public String getUserID()
+	public int getUserID()
 	{
 		return this.userId;
 	}

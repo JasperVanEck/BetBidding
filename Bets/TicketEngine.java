@@ -32,6 +32,7 @@ public class TicketEngine implements GearmanFunction
 	public byte[] work(String function, byte[] data, GearmanFunctionCallback callback) throws Exception
 	{
 		String input = new String(data);
+		System.out.printf(input + "\n");
 		Ticket ticket = new Ticket(input);
 		System.out.printf("Ticket is aangemaakt! \n");
 		this.orderBook.processTicket(ticket, this.hashTabel);
