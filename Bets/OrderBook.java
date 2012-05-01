@@ -79,6 +79,8 @@ public class OrderBook
 	 	 * de wachtrij, en vervolgens worden onderstaande stappen - net als een order van een gebruiker 
 		 * die nog niets in het orderboek - doorlopen.
 		 */
+		
+		
 		System.out.printf("Stap 1\n");
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)

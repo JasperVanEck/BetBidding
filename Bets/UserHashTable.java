@@ -82,6 +82,4 @@ public class UserHashTable
 		
 		return price;
 	}
-	
-	
 }

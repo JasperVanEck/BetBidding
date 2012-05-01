@@ -7,13 +7,15 @@ import org.gearman.GearmanWorker;
 import org.gearman.GearmanFunctionCallback;
 import org.gearman.GearmanServer;
 
-public class TicketEngine implements GearmanFunction
+public class TicketEngine extends Thread implements GearmanFunction 
 {
 	public static OrderBook orderBook;
 	
 	public static void main(String[] args)
 	{
 		orderBook = new OrderBook(args[0]);
+		
+		(new TicketEngine()).start();
 		
 		Gearman gearman = Gearman.createGearman();
 		
@@ -36,5 +38,14 @@ public class TicketEngine implements GearmanFunction
 		this.orderBook.processTicket(ticket);
 		System.out.printf(ticket.getType() + " verwerkt\n");
 		return data;
-	} 
+	}
+	
+	public void run()
+	{
+		
+		
+		
+		
+		
+	}
 }
