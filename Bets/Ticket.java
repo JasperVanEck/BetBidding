@@ -20,30 +20,30 @@ public class Ticket{
 	{	
 		
 		//{ activity: activity, type: type, userid: userid, outcome: outcome, bet: bet, tickets: tickets, bidask: bidask, time: time }
-		try{
+		
 		//		{"activity":"activity_test","userid":604243,"outcome":0,"bet":79,"tickets":116,"bidask":"bid","time":"01\/05\/2012 11:50:45:000000"}
 		Scanner lineScanner = new Scanner(stringToParse).useDelimiter("\\s*[ {:\",\\\\/]\\s*");
 		
 		lineScanner.next(); lineScanner.next(); lineScanner.next(); lineScanner.next();
-		activity = lineScanner.next();
-		System.out.println("activity: " + activity);
+		this.activity = lineScanner.next();
+		//System.out.println("activity: " + activity);
 		
 		lineScanner.next(); lineScanner.next(); lineScanner.next(); lineScanner.next();
-		userId = lineScanner.next();
-		System.out.println("userid: " + userId);
+		this.userId = lineScanner.next();
+		//System.out.println("userid: " + userId);
 		
 		lineScanner.next(); lineScanner.next(); lineScanner.next();
 		
 		this.outcome = lineScanner.nextInt();
-		System.out.println("outcome: " + outcome);
+		//System.out.println("outcome: " + outcome);
 		
 		lineScanner.next(); lineScanner.next(); lineScanner.next();
 		this.price = lineScanner.nextInt(); 	
-		System.out.println("price: " + price);
+		//System.out.println("price: " + price);
 		
 		lineScanner.next(); lineScanner.next(); lineScanner.next();
 		this.amount = lineScanner.nextInt(); 	
-		System.out.println("amount: " + amount);
+		//System.out.println("amount: " + amount);
 		
 		lineScanner.next(); lineScanner.next(); lineScanner.next(); lineScanner.next();
 		String bidOrAsk = lineScanner.next();
@@ -54,41 +54,41 @@ public class Ticket{
 		{
 			this.bidOrAsk = 1;
 		}
-		System.out.println("bidOrAsk: " + this.bidOrAsk);
+		//System.out.println("bidOrAsk: " + this.bidOrAsk);
 		
 		lineScanner.next();  lineScanner.next();  lineScanner.next();lineScanner.next(); lineScanner.next();
 		int day = lineScanner.nextInt(); 	 
-		System.out.println("day: " + day);
+		//System.out.println("day: " + day);
 		
 		lineScanner.next();		 
 		int month = lineScanner.nextInt() -1; 	 
-		System.out.println("month: " + month);
+		//System.out.println("month: " + month);
 		 
 		lineScanner.next(); //lineScanner.next();  		 
 		int year = lineScanner.nextInt(); 	 
-		System.out.println("year: " + year);
+		//System.out.println("year: " + year);
 		
 		//lineScanner.next(); //lineScanner.next();  		 
 		int hour = lineScanner.nextInt(); 	 
-		System.out.println("hour: " + hour);
+		//System.out.println("hour: " + hour);
 		
 		int minute = lineScanner.nextInt(); 	 
-		System.out.println("minute: " + minute);
+		//System.out.println("minute: " + minute);
 		
 		int second = lineScanner.nextInt(); 	 
-		System.out.println("second: " + second);
+		//System.out.println("second: " + second);
 		
 		int millisec = lineScanner.nextInt();
-		System.out.println("millisec: " + millisec);
+		//System.out.println("millisec: " + millisec);
 		this.date = new GregorianCalendar(year, month, day, hour, minute, second);
 		//date.set(year,  month, day, hour, second, minute);
 		
-		System.out.println(date.getTime());
+		System.out.println(this.date.getTime());
 		
 		lineScanner.close();
 	}
 	
-	public Ticket(String activity, String type, int userID, int outcome, int price, int amount, int bidOrAsk, int date)
+	public Ticket(String activity, String userID, int outcome, int price, int amount, int bidOrAsk, int date)
 	{
 		this.activity = activity;
 		this.type = type;
@@ -99,9 +99,7 @@ public class Ticket{
 		this.amountLeft = this.amount;
 		this.bidOrAsk = bidOrAsk;
 		this.date = new GregorianCalendar(date, date, date, date, date, date);
-		
-	
-		}
+	}
 	
 
 	public String getTicketKey()
@@ -124,7 +122,8 @@ public class Ticket{
 	{
 		boolean correct = false;
 		
-		if(amount >= 0){
+		if(amount >= 0)
+		{
 			correct = true;
 			this.amount = amount;
 			if(this.amountLeft > this.amount)
@@ -234,7 +233,7 @@ public class Ticket{
 		return this.type;
 	}
 	
-	public int getUserID()
+	public String getUserID()
 	{
 		return this.userId;
 	}

@@ -10,12 +10,10 @@ import org.gearman.GearmanServer;
 public class TicketEngine implements GearmanFunction
 {
 	public static OrderBook orderBook;
-	public static UserHashTable hashTabel;
 	
 	public static void main(String[] args)
 	{
 		orderBook = new OrderBook(args[0]);
-		hashTabel = new UserHashTable();
 		
 		Gearman gearman = Gearman.createGearman();
 		
@@ -35,7 +33,7 @@ public class TicketEngine implements GearmanFunction
 		System.out.printf(input + "\n");
 		Ticket ticket = new Ticket(input);
 		System.out.printf("Ticket is aangemaakt! \n");
-		this.orderBook.processTicket(ticket, this.hashTabel);
+		this.orderBook.processTicket(ticket);
 		System.out.printf(ticket.getType() + " verwerkt\n");
 		return data;
 	} 
