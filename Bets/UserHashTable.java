@@ -73,14 +73,14 @@ public class UserHashTable
 	//zo ja, return de prijs, ander return -1
 	public int checkUserHasTicketAlready(Ticket ticket)
 	{
-		int prize= -1;
+		int price= -1;
 		
 		if(checkUserExists(ticket.getUserID()) && userHashTable.get(ticket.getUserID()).checkUserHasActivity(ticket))
 		{
-			prize = userHashTable.get(ticket.getUserID()).getPrizeOfActivity(ticket);
+			price = userHashTable.get(ticket.getUserID()).getPriceOfActivity(ticket);
 		}
 		
-		return prize;
+		return price;
 	}
 	
 	

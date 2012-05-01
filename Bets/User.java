@@ -76,11 +76,11 @@ public class User
 		}
 	}
 	
-	public int getPrizeOfActivity(Ticket ticket)
+	public int getPriceOfActivity(Ticket ticket)
 	{
 		if(ticketsOfUser.containsKey(getTicketKey(ticket)))
 		{
-			return ticketsOfUser.get(getTicketKey(ticket)).getPrize();
+			return ticketsOfUser.get(getTicketKey(ticket)).getPrice();
 		}
 		return 0;
 	}
@@ -133,7 +133,7 @@ public class User
 
 			if(ticket.getBidOrAsk() ==  bidOrAsk && (outcome ==-1 || outcome == ticket.getOutcome()))
 			{
-				totalTicketAmount += ticket.getAmount() * ticket.getPrize();
+				totalTicketAmount += ticket.getAmount() * ticket.getPrice();
 			}
 		}
 		return totalTicketAmount;
@@ -154,17 +154,17 @@ public class User
 	{
 		Iterator<String> it = ticketsOfUser.keySet().iterator();
 
-		int totalTicketPrize = 0;
+		int totalTicketPrice = 0;
 		
 		String activity = (String) it.next();
 		Ticket ticket = ticketsOfUser.get(activity);
 
 		if(ticket.getBidOrAsk() ==  bidOrAsk && outcome == ticket.getOutcome())
 		{
-			totalTicketPrize += ticket.getPrize();
+			totalTicketPrice += ticket.getPrice();
 		}
 		
-		return totalTicketPrize;
+		return totalTicketPrice;
 	}
 
 	/*

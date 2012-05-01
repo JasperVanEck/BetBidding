@@ -28,7 +28,7 @@ public class OrderBook
 		for(int i = 0; i < askLow.length; i++)
 		{
 			this.askLow[i] = 100;
-			this.bidHigh[i]= 0;
+			this.bidHigh[i] = 0;
 		}	
 	}
 	
@@ -72,12 +72,13 @@ public class OrderBook
 	public void processTicket(Ticket ticket, UserHashTable userHashTable2)
 	{
 		this.userHashTable = userHashTable2;
+
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
 		 * bestaande order. Concreet betekend dit dat de al bestaande order verwijderd zal worden uit 
-	 	 * de wachtrij, en vervolgens worden onderstaande stappen – net als een order van een gebruiker 
-		 * die nog niets in het orderboek – doorlopen.
+	 	 * de wachtrij, en vervolgens worden onderstaande stappen - net als een order van een gebruiker 
+		 * die nog niets in het orderboek - doorlopen.
 		 */
 		 
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
@@ -134,17 +135,34 @@ public class OrderBook
 			 * 	b. Als dat niet kan, of slechts een deel van de nieuwe order is op deze manier gematcht,
 			 * 	dan checkt de engine of er een match tot stand kan worden gebracht met anderen uit dezelfde
 			 * 	orderboek-zijde.
+			 * 		i. Voor de bid-zijde kan dat, als de optelsom van maximale bets (prijzen) van elke
+			 * 		outcome, optelt tot 100 cent of meer. Dus: user x is bereid 60 cent te betalen voor
+			 * 		'Nederland wint', user y 30 cent voor 'Duitsland wint', en user z 10 cent voor
+			 * 		'Gelijkspel'. Samen bieden ze exact 100 cent, dus kan er een match tot stand worden 
+			 * 		gebracht aan de bid-zijde. Er hoeft geen bod te zijn op alle uitkomsten. Theoretisch
+			 * 		zou iemand dus 100 cent op 'Nederland' kunnen bieden, waarbij er een 'match' tot stand
+			 * 		komt. Zo lang de 100 cent maar gehaald wordt. In het geval dat niet elke outcome
+			 * 		vertegenwoordigd is in de match, gaan de tickets die gecreeerd worden op de
+			 * 		niet-vertegenwoordigde outcomes in 'onze pot'.
+			 * 		ii. Voor de ask-zijde kan dat, als de optelsom van minimale bets (prijzen) van elke
+			 * 		outcome, optelt tot 100 cent of minder. Dus: user x is bereid 60 cent te betalen voor
+			 * 		'Nederland wint', user y 25 cent voor 'Duitsland wint', en user z 10 cent voor
+			 * 		'Gelijkspel'. Samen bieden ze 95 cent, dus kan er een match tot stand worden gebracht
+			 * 		aan de ask-zijde. Belangrijk hierbij is dat - itt tot bij de bid-zijde - hier alle 
+			 * 		outcomes vertegenwoordigd moeten zijn. Een match aan de ask-zijde kan dus alleen tot 
+			 * 		stand komen als er en op alle mogelijke uitkomsten een user zijn tickets wil verkopen,
+			 * 		en dat de optelsom van de minimale bets per uitkomst gelijk zijn of kleiner dan 100 cent.
 			 */
 				/*
 				 *	i. Voor de bid-zijde kan dat, als de optelsom van maximale bets (prijzen) van elke
 				 * 	outcome, optelt tot 100 cent of meer. Dus: user x is bereid 60 cent te betalen voor
-				 * 	Nederland wint, user y 30 cent voor Duitsland wint, en user z 10 cent voor
-				 * 	Gelijkspel. Samen bieden ze exact 100 cent, dus kan er een match tot stand worden 
+				 * 	'Nederland wint', user y 30 cent voor 'Duitsland wint', en user z 10 cent voor
+				 * 	'Gelijkspel'. Samen bieden ze exact 100 cent, dus kan er een match tot stand worden 
 				 * 	gebracht aan de bid-zijde. Er hoeft geen bod te zijn op alle uitkomsten. Theoretisch
-				 * 	zou iemand dus 100 cent op Nederland kunnen bieden, waarbij er een match tot stand
+				 * 	zou iemand dus 100 cent op 'Nederland' kunnen bieden, waarbij er een 'match' tot stand
 				 * 	komt. Zo lang de 100 cent maar gehaald wordt. In het geval dat niet elke outcome
-				 * 	vertegenwoordigd is in de match, gaan de tickets die gecreëerd worden op de
-				 * 	niet-vertegenwoordigde outcomes in onze pot.
+				 * 	vertegenwoordigd is in de match, gaan de tickets die gecreeerd worden op de
+				 * 	niet-vertegenwoordigde outcomes in 'onze pot'.
 				 */
 				while(bidMatchPresent(ticket) && ticket.getAmount() > 0 && ticket.getBidOrAsk() == BID)
 				{
@@ -154,11 +172,11 @@ public class OrderBook
 				/* 
 				 * 		ii. Voor de ask-zijde kan dat, als de optelsom van minimale bets (prijzen) van elke
 				 * 		outcome, optelt tot 100 cent of minder. Dus: user x is bereid 60 cent te betalen voor
-				 * 		Nederland wint, user y 25 cent voor Duitsland wint, en user z 10 cent voor
-				 * 		Gelijkspel. Samen bieden ze 95 cent, dus kan er een match tot stand worden gebracht
-				 * 		aan de ask-zijde. Belangrijk hierbij is dat – itt tot bij de bid-zijde – hier alle 
+				 * 		'Nederland wint', user y 25 cent voor 'Duitsland wint', en user z 10 cent voor
+				 * 		'Gelijkspel'. Samen bieden ze 95 cent, dus kan er een match tot stand worden gebracht
+				 * 		aan de ask-zijde. Belangrijk hierbij is dat - itt tot bij de bid-zijde - hier alle 
 				 * 		outcomes vertegenwoordigd moeten zijn. Een match aan de ask-zijde kan dus alleen tot 
-				 * 		stand komen als er én op alle mogelijke uitkomsten een user zijn tickets wil verkopen,
+				 * 		stand komen als er en op alle mogelijke uitkomsten een user zijn tickets wil verkopen,
 				 * 		en dat de optelsom van de minimale bets per uitkomst gelijk zijn of kleiner dan 100 cent.
 				 */
 				while(askMatchPresent(ticket) && ticket.getAmount() > 0 && ticket.getBidOrAsk() == ASK)
