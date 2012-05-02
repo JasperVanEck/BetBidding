@@ -47,11 +47,12 @@ public class OrderBook
 		this.userHashTable = new UserHashTable();
 		try{
 			this.dbConn = new DataBaseConnection();
-			this.activityID = this.dbConn.createBidHighAskLowTable(this.askLow, this.bidHigh, this.activity);
-			this.dbConn.createOrderInputTable();
-			this.dbConn.createOrderHandledTable(this.activity);
-			this.dbConn.createKoersTable(this.activity);
-		}catch(SQLException e)
+			//vanwege de geen verbinding doen ze t nog niet
+			//this.activityID = this.dbConn.createBidHighAskLowTable(this.askLow, this.bidHigh, this.activity);
+			//this.dbConn.createOrderInputTable();
+			//this.dbConn.createOrderHandledTable(this.activity);
+			//this.dbConn.createKoersTable(this.activity);
+		}catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		} 
@@ -97,7 +98,7 @@ public class OrderBook
 	public void processTicket(Ticket ticket)
 	{
 		try{
-		this.dbConn.insertNewOrder(ticket);
+		//this.dbConn.insertNewOrder(ticket);
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
@@ -306,7 +307,7 @@ public class OrderBook
 		System.out.println("bid "+ ": "+ getKoers("bid"));
 		System.out.println("ask "+ ": "+ getKoers("ask"));
 		System.out.println("********************************************");
-		}catch(SQLException e)
+		}catch(Exception e)
 		{
 			System.out.println(e.getMessage());
 		}
