@@ -1,4 +1,5 @@
 import java.util.GregorianCalendar;
+import java.sql.*;
 
 public class OrderBook
 {
@@ -31,6 +32,7 @@ public class OrderBook
 			this.bidHigh[i] = 0;
 		}
 		this.userHashTable = new UserHashTable();
+		Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
 	}
 	
 	///This function returns the activity of this orderbook

@@ -42,10 +42,10 @@ public class TicketEngine extends Thread implements GearmanFunction
 	
 	public void run()
 	{
-		
-		
-		
-		
-		
+		while(true)
+		{
+			
+			
+		}
 	}
 }
