@@ -103,6 +103,7 @@ public class Ticket{
 		this.date = new GregorianCalendar(date, date, date, date, date, date);
 	}
 	
+	
 
 	public String getTicketKey()
 	{
@@ -152,6 +153,10 @@ public class Ticket{
 		return succes;
 	}
 	
+	public void setPrice(int newPrice)
+	{
+		this.price = newPrice;
+	}
 	/*
 	 * This function return a number from 1-6
 	 * win		draw	loss
