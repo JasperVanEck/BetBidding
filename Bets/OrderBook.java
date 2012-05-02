@@ -1,6 +1,5 @@
 import java.util.GregorianCalendar;
 import java.sql.*;
-
 public class OrderBook
 {
 	/*
@@ -17,11 +16,11 @@ public class OrderBook
 	private String activity;
 	private int activityID;
 	private int[] koers = new int[3];
-	
+		
 	private final static int BID = 0;
 	private final static int ASK = 1;
 	
-	DataBaseConnection dbConn;
+	private DataBaseConnection dbConn;
 	
 	private String ADVANTAGE = "first";
 	
@@ -93,7 +92,39 @@ public class OrderBook
 			System.out.println("advantage moet first of last zijn"); 
 		}
 	}
+	/*
+	//This method is for new threads which carry out the database actions.
+	public void run(Ticket ticket, String type)
+	{
+		switch(type)
+		{
+			case "newOrder":
+				this.dbConn.insertNewOrder(ticket);
+				break;
+			case "handledOrder":
+				this.dbConn.insertOrderHandled(ticket, this.activityID);
+				break;
+			case "":
+				
+				break;
+			default: break;
+		}
+	}
 	
+	//Overloaded new thread for the Koers updates.
+	public void run(String type, int[] koers)
+	{
+		if(type.equals("koersUpdate"))
+		{
+			this.dbConn.insertKoersTable(this.activity, koers, "date");
+		}
+	}
+	
+	public void run()
+	{
+		this.dbConn.updateBidHighAskLow(this.askLow, this.bidHigh, this.activity, this.activityID);
+	}
+*/
 	//This function processes an order
 	public void processTicket(Ticket ticket)
 	{
@@ -109,7 +140,9 @@ public class OrderBook
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
 		//System.out.println("koers bid: "+ getKoers("bid"));
 		//System.out.println("koers ask: "+ getKoers("ask"));
-		
+		try{
+			
+		    this.dbConn.insertNewOrder(ticket);
 		System.out.print("\tStap 1, kijken of user al ticket heeft");
 		int test = 0;
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)
