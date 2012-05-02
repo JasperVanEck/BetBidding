@@ -15,6 +15,7 @@ public boolean addUser(Ticket ticket)
 	{
 		if(!checkUserExists(ticket.getUserID()))
 		{
+			
 			User user = new User(ticket);
 			userHashTable.put(ticket.getUserID(), user);
 			return true;
@@ -26,6 +27,7 @@ public boolean addUser(Ticket ticket)
 	{
 		if(!checkUserExists(ticket.getUserID()))
 		{
+			System.out.println("hier niet exists");
 			addUser(ticket);
 		}
 		else

@@ -5,6 +5,9 @@ import java.util.Scanner;
 
 public class Main
 {
+	
+	
+	
 	public static void main(String[] args)
 	{
 		//String om eerst mee te testen
@@ -25,17 +28,36 @@ public class Main
 			
 			OrderBook orderBook = new OrderBook(activity);
 		//System.out.println("ticket" + ticket.getOutcome());
+			/*
+			Main m = new Main();
+			System.out.println("ob: outcome = 0, getal=1 "+ m.otherBidColumnOrderBook(0, 1));
+			System.out.println("ob: outcome = 0, getal=2 "+ m.otherBidColumnOrderBook(0, 2));
+			System.out.println("bh: outcome = 0, getal=1 "+ m.otherBidColumnBidHigh(0, 1));
+			System.out.println("bh: outcome = 0, getal=2 "+ m.otherBidColumnBidHigh(0, 2));
+			
+			System.out.println("ob: outcome = 1, getal=1 "+ m.otherBidColumnOrderBook(1, 1));
+			System.out.println("ob: outcome = 1, getal=2 "+ m.otherBidColumnOrderBook(1, 2));
+			System.out.println("bh: outcome = 1, getal=1 "+ m.otherBidColumnBidHigh(1, 1));
+			System.out.println("bh: outcome = 1, getal=2 "+ m.otherBidColumnBidHigh(1, 2));
+				
+			System.out.println("ob: outcome = 2, getal=1 "+ m.otherBidColumnOrderBook(2, 1));
+			System.out.println("ob: outcome = 2, getal=2 "+ m.otherBidColumnOrderBook(2, 2));
+			System.out.println("bh: outcome = 2, getal=1 "+ m.otherBidColumnBidHigh(2, 1));
+			System.out.println("bh: outcome = 2, getal=2 "+ m.otherBidColumnBidHigh(2, 2));
+			*/
 			System.out.println("ticket geprocessing begint");
 			
+			
+			
 			orderBook.processTicket(ticket);
-			System.out.println("ticket geprocessed");
+			
 			while(scanner.hasNextLine())
 			{
 				input = scanner.nextLine();
 				ticket = new Ticket(input);
 				//System.out.println("ticket" + ticket.getOutcome());
 				orderBook.processTicket(ticket);
-				//System.out.println("Ticket processed");
+				
 			}
 			
 		
