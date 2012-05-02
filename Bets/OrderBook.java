@@ -1,5 +1,5 @@
 import java.util.GregorianCalendar;
-
+import java.sql.*;
 public class OrderBook
 {
 	/*
@@ -14,10 +14,13 @@ public class OrderBook
 	private int[] askLow = new int[3];
 	private int[] bidHigh = new int[3];
 	private String activity;
-	
+	private int activityID;
+	private int[] koers = new int[3];
+		
 	private final static int BID = 0;
 	private final static int ASK = 1;
 	
+	private DataBaseConnection dbConn;
 	
 	private String ADVANTAGE = "first";
 	
@@ -29,6 +32,7 @@ public class OrderBook
 		{
 			this.askLow[i] = 100;
 			this.bidHigh[i] = 0;
+			this.koers[i] = 0;
 		}
 		for(int i = 0; i < 6; i++)
 		{
@@ -40,7 +44,16 @@ public class OrderBook
 		}
 		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
-		
+		try{
+			this.dbConn = new DataBaseConnection();
+			this.activityID = this.dbConn.createBidHighAskLowTable(this.askLow, this.bidHigh, this.activity);
+			this.dbConn.createOrderInputTable();
+			this.dbConn.createOrderHandledTable(this.activity);
+			this.dbConn.createKoersTable(this.activity);
+			}catch(SQLException e)
+			{
+				System.out.println(e.getMessage());
+			}
 	}
 	
 	///This function returns the activity of this orderbook
@@ -78,7 +91,39 @@ public class OrderBook
 			System.out.println("advantage moet first of last zijn"); 
 		}
 	}
+	/*
+	//This method is for new threads which carry out the database actions.
+	public void run(Ticket ticket, String type)
+	{
+		switch(type)
+		{
+			case "newOrder":
+				this.dbConn.insertNewOrder(ticket);
+				break;
+			case "handledOrder":
+				this.dbConn.insertOrderHandled(ticket, this.activityID);
+				break;
+			case "":
+				
+				break;
+			default: break;
+		}
+	}
 	
+	//Overloaded new thread for the Koers updates.
+	public void run(String type, int[] koers)
+	{
+		if(type.equals("koersUpdate"))
+		{
+			this.dbConn.insertKoersTable(this.activity, koers, "date");
+		}
+	}
+	
+	public void run()
+	{
+		this.dbConn.updateBidHighAskLow(this.askLow, this.bidHigh, this.activity, this.activityID);
+	}
+*/
 	//This function processes an order
 	public void processTicket(Ticket ticket)
 	{
@@ -92,7 +137,9 @@ public class OrderBook
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
 		//System.out.println("koers bid: "+ getKoers("bid"));
 		//System.out.println("koers ask: "+ getKoers("ask"));
-		
+		try{
+			
+		    this.dbConn.insertNewOrder(ticket);
 		System.out.print("\tStap 1, kijken of user al ticket heeft");
 		int test = 0;
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)
@@ -290,7 +337,13 @@ public class OrderBook
 		System.out.println("bid "+ ": "+ getKoers("bid"));
 		System.out.println("ask "+ ": "+ getKoers("ask"));
 		System.out.println("********************************************");
+		}catch(SQLException e)
+	 	 	
+	    {
 		
+	     System.out.println(e.getMessage());
+	 	 	
+	    }
 		
 	}
 
