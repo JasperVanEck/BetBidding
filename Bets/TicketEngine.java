@@ -7,15 +7,17 @@ import org.gearman.GearmanWorker;
 import org.gearman.GearmanFunctionCallback;
 import org.gearman.GearmanServer;
 
-public class TicketEngine extends Thread implements GearmanFunction 
+public class TicketEngine implements GearmanFunction 
 {
 	public static OrderBook orderBook;
 	
+	/**
+	 * Main method serves for initiating gearman worker and orderBook.
+	 * What it says above.
+	 */
 	public static void main(String[] args)
 	{
 		orderBook = new OrderBook(args[0]);
-		
-		(new TicketEngine()).start();
 		
 		Gearman gearman = Gearman.createGearman();
 		
@@ -30,6 +32,13 @@ public class TicketEngine extends Thread implements GearmanFunction
 		worker.addServer(server);
 	}
 	
+	/**
+	 * This function is the worker of the Engine.
+	 * It retrieves jobs from the Gearman Jobserver, which it then starts to process.
+	 * It creates a string of the retrieved data. The string is in JSON format.
+	 * The string is then used as input for the Ticket constructor, which creates a ticket.
+	 * After which it is entered into the orderBook.
+	 */ 
 	@Override
 	public byte[] work(String function, byte[] data, GearmanFunctionCallback callback) throws Exception
 	{
@@ -40,14 +49,5 @@ public class TicketEngine extends Thread implements GearmanFunction
 		this.orderBook.processTicket(ticket);
 		System.out.printf(ticket.getType() + " verwerkt\n");
 		return data;
-	}
-	
-	public void run()
-	{
-		while(true)
-		{
-			
-			
-		}
 	}
 }

@@ -20,8 +20,9 @@ public class DataBaseConnection
 		}
 	}
 	
-	public void createBidHighAskLowTable() throws SQLException
+	public int createBidHighAskLowTable(int[] askLow, int[] bidHigh, String activity) throws SQLException
 	{
+		int id = 0;
 		String createTable = "CREATE TABLE IF NOT EXISTS bidhighasklow " +
 					"( id int(11) NOT NULL AUTO_INCREMENT, " +
 					" activity varchar(40) NOT NULL, " + 
@@ -34,19 +35,54 @@ public class DataBaseConnection
 					" PRIMARY KEY (id) " +
 					" )";
 		
+		String firstEntry = "insert into bidhighasklow " +
+					"values( '" + activity + "', " + 
+					bidHigh[0] + ", " + 
+					bidHigh[1] + ", " + 
+					bidHigh[2] + ", " + 
+					askLow[0] + ", " + 
+					askLow[1] + ", " + 
+					askLow[2] +  
+					" )";
+		
+		String idQuery = "select id " + 
+					"from bidhighasklow " +
+					"where outcome_bid_0 = " + bidHigh[0] +
+					"AND outcome_bid_1 = " + bidHigh[1] + 
+					"AND outcome_bid_2 = " + bidHigh[2] + 
+					"AND outcome_ask_0 = " + askLow[0] + 
+					"AND outcome_ask_1 = " + askLow[1] + 
+					"AND outcome_ask_2 = " + askLow[2] + 
+					"AND activity = '" +  activity + "' ";
+		
 		Statement stmt = null;
+		Statement pstmt = null;
+		Statement stmt2 = null;
 		try{
+			this.conn.setAutoCommit(false);
 			stmt = this.conn.createStatement();
+			pstmt = this.conn.createStatement();
+			stmt2 = this.conn.createStatement();
 			stmt.executeUpdate(createTable);
+			pstmt.executeUpdate(firstEntry);
+			ResultSet rs = stmt2.executeQuery(idQuery);
+			conn.commit();
+			while(rs.next())
+			{
+				id = rs.getInt("id");
+			}
 		}catch(SQLException e)
 		{
 			System.out.println(e.getMessage());
 		}finally
 		{
-			if(stmt != null)
+			if(stmt != null || pstmt != null)
 			{
 				stmt.close();
+				pstmt.close();
 			}
+			this.conn.setAutoCommit(true);
+			return id;
 		}
 	}
 	
@@ -61,18 +97,18 @@ public class DataBaseConnection
 					"outcome_ask_2 = " + askLow[2] + 
 					"where activity = '" + activity + "' " + 
 					"AND id = " + id;
-		Statement stmt = null;
+		PreparedStatement pstmt = null;
 		try{
-			stmt = this.conn.createStatement();
-			stmt.executeUpdate(updateTable);
+			pstmt = this.conn.prepareStatement(updateTable);
+			pstmt.executeUpdate();
 		}catch(SQLException e)
 		{
 			System.out.println(e.getMessage());
 		}finally
 		{
-			if(stmt != null)
+			if(pstmt != null)
 			{
-				stmt.close();
+				pstmt.close();
 			}
 		}
 	}

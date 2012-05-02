@@ -1,6 +1,6 @@
 import java.util.GregorianCalendar;
 
-public class OrderBook
+public class OrderBook extends Thread
 {
 	/*
 	 * 100x6 array filled with queues, these queues are filled with tickets?
@@ -18,6 +18,7 @@ public class OrderBook
 	private final static int BID = 0;
 	private final static int ASK = 1;
 	
+	private DataBaseConnection dbConn;
 	
 	private String ADVANTAGE = "first";
 	
@@ -40,7 +41,7 @@ public class OrderBook
 		}
 		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
-		
+		dbConn = new DataBaseConnection();
 	}
 	
 	///This function returns the activity of this orderbook
@@ -79,9 +80,20 @@ public class OrderBook
 		}
 	}
 	
+	public void run()
+	{
+		
+	}
 	//This function processes an order
 	public void processTicket(Ticket ticket)
 	{
+		//orderBook object voor het runnen van een thread;)
+		//met thread.start() kan je een nieuwe thread starten. 
+		//Hij begint dan in de nieuwe thread met de method run(), 
+		//vanuit daar kan je dan de database connections aanroepen. 
+		//Dan kan ie gewoon lekker verder lopen met de ticket handling.
+		//heb de run method maar ff hierboven gezet.
+		OrderBook thread = new OrderBook(ticket.getActivity());
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
@@ -101,14 +113,14 @@ public class OrderBook
 			System.out.println("\tTicket proberen te deleten\n");
 			deleteTicket(ticket);
 			System.out.printf("\tTicket deleted\n");
-			test =1;
+			test = 1;
 			
 		}
 		//System.out.println("koers bid: "+ getKoers("bid"));
 		//System.out.println("koers ask: "+ getKoers("ask"));
 		
 		
-		if(test ==0)
+		if(test == 0)
 		{
 			System.out.println("--> user heeft ticket nog niet");
 		}

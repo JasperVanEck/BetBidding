@@ -11,7 +11,7 @@ public class UserHashTable
 		userHashTable = new HashMap<String, User>();
 	}
 	
-public boolean addUser(Ticket ticket)
+	public boolean addUser(Ticket ticket)
 	{
 		if(!checkUserExists(ticket.getUserID()))
 		{

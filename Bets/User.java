@@ -90,7 +90,7 @@ public class User
 		return 0;
 	}
 	
-	/*
+	/**
 	 * iterate through the hash table and get sum of amount tickets
 	 * outcome is optional, if you don't care what the outcome is,
 	 * set outcome = -1
@@ -114,7 +114,7 @@ public class User
 		return totalTickets;
 	}
 
-	/*
+	/**
 	 * Get total number of tickets, for any outcome
 	 */
 	public int getOutStandingOrderTickets(int bidOrAsk)
@@ -122,7 +122,7 @@ public class User
 		return getOutStandingOrderTickets(bidOrAsk, -1);
 	}
 
-	/*
+	/**
 	 * Get the total value of all the tickets for a certain outcome and bid or ask
 	 */
 	public int getOutStandingOrderAmount(int bidOrAsk, int outcome)
@@ -144,7 +144,7 @@ public class User
 		return totalTicketAmount;
 	}
 	
-	/*
+	/**
 	 * Get the total value of all the tickets for bid or ask, for any outcome
 	 */
 	public int getOutStandingOrderAmount(int bidOrAsk)
@@ -152,7 +152,7 @@ public class User
 		return getOutStandingOrderAmount(bidOrAsk, -1);
 	}
 
-	/*
+	/**
 	 * Get the total price of all the different bid or ask prices
 	 */
 	public int getOutStandingOrderPrice(int bidOrAsk, int outcome)
@@ -172,7 +172,7 @@ public class User
 		return totalTicketPrice;
 	}
 
-	/*
+	/**
 	 * Check how many tickets this user has
 	 */
 	public int getAmountOfDifferentTickets()
