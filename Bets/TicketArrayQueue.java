@@ -11,6 +11,7 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 	    rear = -1;
 	    nItems = 0;
 	}
+	
 
 	public TicketArrayQueue(int initCapacity){
 		if(initCapacity <= 0){
