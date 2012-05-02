@@ -1,4 +1,5 @@
 import java.util.GregorianCalendar;
+import java.sql.*;
 
 public class OrderBook
 {
@@ -14,10 +15,13 @@ public class OrderBook
 	private int[] askLow = new int[3];
 	private int[] bidHigh = new int[3];
 	private String activity;
+	private int activityID;
+	private int[] koers = new int[3];
 	
 	private final static int BID = 0;
 	private final static int ASK = 1;
 	
+	DataBaseConnection dbConn;
 	
 	private String ADVANTAGE = "first";
 	
@@ -29,6 +33,7 @@ public class OrderBook
 		{
 			this.askLow[i] = 100;
 			this.bidHigh[i] = 0;
+			this.koers[i] = 0;
 		}
 		for(int i = 0; i < 6; i++)
 		{
@@ -40,7 +45,16 @@ public class OrderBook
 		}
 		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
-		
+		try{
+			this.dbConn = new DataBaseConnection();
+			this.activityID = this.dbConn.createBidHighAskLowTable(this.askLow, this.bidHigh, this.activity);
+			this.dbConn.createOrderInputTable();
+			this.dbConn.createOrderHandledTable(this.activity);
+			this.dbConn.createKoersTable(this.activity);
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		} 
 	}
 	
 	///This function returns the activity of this orderbook
@@ -82,6 +96,8 @@ public class OrderBook
 	//This function processes an order
 	public void processTicket(Ticket ticket)
 	{
+		try{
+		this.dbConn.insertNewOrder(ticket);
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
@@ -290,8 +306,10 @@ public class OrderBook
 		System.out.println("bid "+ ": "+ getKoers("bid"));
 		System.out.println("ask "+ ": "+ getKoers("ask"));
 		System.out.println("********************************************");
-		
-		
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 
 	public Ticket doMarketTransactions(Ticket ticket1)
