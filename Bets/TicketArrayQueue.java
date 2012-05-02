@@ -28,8 +28,7 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 
 	public Ticket enqueue(Ticket elem){
 		ensureCapacity();
-		rear++;
-		arr[rear] = elem;
+		arr[rear++] = elem;
 		return elem;
 	}
 
