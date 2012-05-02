@@ -44,6 +44,7 @@ public class OrderBook
 		}
 		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
+		/*
 		try{
 			this.dbConn = new DataBaseConnection();
 			this.activityID = this.dbConn.createBidHighAskLowTable(this.askLow, this.bidHigh, this.activity);
@@ -54,6 +55,7 @@ public class OrderBook
 			{
 				System.out.println(e.getMessage());
 			}
+			*/
 	}
 	
 	///This function returns the activity of this orderbook
@@ -137,9 +139,9 @@ public class OrderBook
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
 		//System.out.println("koers bid: "+ getKoers("bid"));
 		//System.out.println("koers ask: "+ getKoers("ask"));
-		try{
-			
-		    this.dbConn.insertNewOrder(ticket);
+		//try{
+		//	
+		//    this.dbConn.insertNewOrder(ticket);
 		System.out.print("\tStap 1, kijken of user al ticket heeft");
 		int test = 0;
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)
@@ -225,7 +227,7 @@ public class OrderBook
 			while ( bidAskMeets(ticket) && ticket.getAmount() > 0)
 			{
 			 	ticket = doBidAskMeetsTransactions(ticket);	
-			 	System.out.println("match gemaakt");
+			 	//System.out.println("match gemaakt");
 			}
 			//System.out.println("koers bid: "+ getKoers("bid"));
 			//System.out.println("koers ask: "+ getKoers("ask"));
@@ -337,13 +339,13 @@ public class OrderBook
 		System.out.println("bid "+ ": "+ getKoers("bid"));
 		System.out.println("ask "+ ": "+ getKoers("ask"));
 		System.out.println("********************************************");
-		}catch(SQLException e)
-	 	 	
-	    {
+		//}catch(SQLException e)
+	 	// 	
+	   // /{
 		
-	     System.out.println(e.getMessage());
+	     //System.out.println(e.getMessage());
 	 	 	
-	    }
+	    //}
 		
 	}
 
@@ -651,9 +653,18 @@ public class OrderBook
 		return sum;
 	}
 	
+	//This function returns the transAction string
+	public String transAction(Ticket ticket, int tradeAmount)
+	{
+		String returnString = "\tHANDEL:\tUserID: "+ ticket.getUserID() + "\tPrice: "+ ticket.getPrice() + "\tOutcome: " + ticket.getOutcome()+ "\tbidOrAsk: " + ticket.getBidOrAsk() +"\tamount: "+ tradeAmount+" aan orderboek toegevoegd";
+		return returnString;
+	}
+	
 	//This function processes the bidAskMeetsTransactions
 	public Ticket doBidAskMeetsTransactions(Ticket ticket)
 	{
+		System.out.println(" --> \tbid ask meets");
+ 		
 		if(ticket.getBidOrAsk() == ASK )
 	 	{
 	 		Ticket ticket2 = orderBook[bidHigh[ticket.getOutcome()]][ticket.getTicketIndex() -1].front();
@@ -661,7 +672,10 @@ public class OrderBook
 	 		
 	 		System.out.println("handel!!!!!!!!!!!!!!");
 	 		//decrease both tickets with tradeAmount
+	 		System.out.println(transAction(ticket, tradeAmount));
 	 		ticket.decreaseAmount(tradeAmount);
+			
+	 		System.out.println(transAction(ticket2, tradeAmount));
 	 		ticket2.decreaseAmount(tradeAmount);
 	 		
 	 		//delete amount of ticket2 in userHashTable
@@ -688,9 +702,11 @@ public class OrderBook
 	 	{
 	 		Ticket ticket2 = orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() + 1].front();
 	 		int tradeAmount = getTradeAmount(ticket, ticket2);
-	 		System.out.println("\n\tbid ask meets!!!! wohooohooo");
 	 		//decrease both tickets with tradeAmount
+	 		System.out.println(transAction(ticket, tradeAmount));
 	 		ticket.decreaseAmount(tradeAmount);
+	 		
+	 		System.out.println(transAction(ticket2, tradeAmount));
 	 		ticket2.decreaseAmount(tradeAmount);
 	 		
 	 		//delete amount of ticket2 in userHashTable
@@ -806,23 +822,16 @@ public class OrderBook
 	//if no matches can be made this function adds ticket to orderbook and userhashtable
 	public void addTicketToOrderBookAndUserHashTable(Ticket ticket, UserHashTable userHashTable)
 	{
-		//if(orderBook[ticket.getPrice()][ticket.getTicketIndex()].isEmpty())
-		//	{
-				//orderBook[ticket.getPrice()][ticket.getTicketIndex()] = new TicketArrayQueue();
-		//	}
-		//System.out.print("ticket index"+ ticket.getTicketIndex());
 		orderBook[ticket.getPrice()][ticket.getTicketIndex()].enqueue(ticket);
 		Ticket ticketTest = orderBook[ticket.getPrice()][ticket.getTicketIndex()].front();
 		if(ticket.getBidOrAsk() == BID)
 		{
-			//System.out.println("Optie A");
 			setNewBidHigh(ticket);
 		} else
 		{
-			//System.out.println("Optie B");
 			setNewAskLow(ticket);
 		}
-		System.out.println("\tHANDEL:\tUserID: "+ ticket.getUserID() + "\tPrice: "+ ticket.getPrice() + "\tOutcome: " + ticket.getOutcome()+ "\tbidOrAsk" + ticket.getBidOrAsk() +"\tamount: "+ ticket.getAmount()+" aan orderboek toegevoegd");
+		System.out.println("\tGEEN HANDEL:\tUserID: "+ ticket.getUserID() + "\tPrice: "+ ticket.getPrice() + "\tOutcome: " + ticket.getOutcome()+ "\tbidOrAsk" + ticket.getBidOrAsk() +"\tamount: "+ ticket.getAmount()+" aan orderboek toegevoegd");
 		userHashTable.addTicket(ticket);
 		
 	}
@@ -850,7 +859,7 @@ public class OrderBook
 	{
 		//dequeue this ticket
 		orderBook[askOrBidPrice][ticket.getTicketIndex()].dequeue();
-		System.out.println("kom ik hier??");
+		//System.out.println("kom ik hier??");
 		//if this was the highest bid / lowest Ask , change into new lowest or highest
 		if(ticket.getBidOrAsk() == BID && bidHigh[ticket.getOutcome()] == askOrBidPrice)
 		{
