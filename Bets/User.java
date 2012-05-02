@@ -4,7 +4,7 @@ import java.util.Iterator;
 public class User
 {
 	private String userID;
-	public HashMap<String, Ticket> ticketsOfUser;
+	public HashMap<String, Ticket> ticketsOfUser = new HashMap<String, Ticket>();
 	
 	//constructor, adds (the first) ticket
 	public User(Ticket ticket)
@@ -67,6 +67,11 @@ public class User
 
 	public boolean checkUserHasActivity(Ticket ticket)
 	{
+		if(ticketsOfUser.isEmpty())
+		{
+			System.out.println("leeg");
+		}
+		
 		if(ticketsOfUser.containsKey(getTicketKey(ticket)))
 		{
 			return true;

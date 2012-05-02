@@ -3,19 +3,15 @@ import java.util.HashMap;
 public class UserHashTable
 {
 	//private String userID;
-	public HashMap<String, User> userHashTable;
+	public HashMap<String, User> userHashTable;// = new HashMap();
 	
 	//default constructor, there will be only one of these
 	public UserHashTable()
 	{
-		
+		userHashTable = new HashMap<String, User>();
 	}
 	
-	//ga er vanuit dat als je een user wilt toevoegen, je ook gelijk een ticket wil toevoegen
-	//waarom zou je anders een user willen toevoegen?
-	// voor de volledigheid zou ik ook nieuwe constructor kunnen maken bij user.java die gewoon een lege
-	//hash table creeert... maarja gaan we cker niet gebruiken
-	public boolean addUser(Ticket ticket)
+public boolean addUser(Ticket ticket)
 	{
 		if(!checkUserExists(ticket.getUserID()))
 		{
@@ -56,7 +52,13 @@ public class UserHashTable
 	
 	public boolean checkUserExists(String userID)
 	{
-		return userHashTable.containsKey(userID);
+		if(userHashTable.isEmpty())
+		{
+			return false;
+		} else
+		{
+			return userHashTable.containsKey(userID);
+		}
 	}
 	
 	//check if user exists, and it has no more orders

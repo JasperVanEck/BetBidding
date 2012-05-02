@@ -30,7 +30,17 @@ public class OrderBook
 			this.askLow[i] = 100;
 			this.bidHigh[i] = 0;
 		}
+		for(int i = 0; i < 6; i++)
+		{
+			for(int j = 0; j < 101; j++)
+			{
+				orderBook[j][i] = new TicketArrayQueue();
+				
+			}
+		}
+		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
+		
 	}
 	
 	///This function returns the activity of this orderbook
@@ -79,25 +89,34 @@ public class OrderBook
 	 	 * de wachtrij, en vervolgens worden onderstaande stappen - net als een order van een gebruiker 
 		 * die nog niets in het orderboek - doorlopen.
 		 */
-		System.out.printf("Stap 1\n");
 		 //First check if user hasn't already this ticket. Then the already existing ticket must be deleted
+		System.out.print("\tStap 1, kijken of user al ticket heeft");
+		int test = 0;
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)
 		{
-			System.out.printf("Ticket proberen te deleten\n");
+			System.out.printf("User heeft ticket al");
+			System.out.println("\tTicket proberen te deleten\n");
 			deleteTicket(ticket);
-			System.out.printf("Ticket deleted\n");
+			System.out.printf("\tTicket deleted\n");
+			test =1;
+		}
+		if(test ==0)
+		{
+			System.out.println("--> user heeft ticket nog niet");
 		}
 		
-		System.out.printf("market match trachten\n");
+		System.out.print("\tMarket deal proberen");
 		//extra, check of het een market deal is.. dan maakt de prijs niet uit.. dus  niet onderstaande stappen doorlopen.
 		if(ticket.getType().equals("market"))
 		{
-			System.out.printf(" doBidAskMeetsTransactions proberen te maken\n"); 
+			System.out.print("market match trachten\n");
+			//System.out.println(" doBidAskMeetsTransactions proberen te maken\n"); 
 			while(marketMatchPresent(ticket))
 			{
+				System.out.println("market deal gevonden!!!");
 				ticket = doBidAskMeetsTransactions(ticket);
 			}
-			System.out.printf("bidAskMeetsTransactions done\n");
+			//System.out.printf("bidAskMeetsTransactions done\n");
 		} else
 		
 		
@@ -110,8 +129,11 @@ public class OrderBook
 		 * dichter bij elkaar zijn gekomen. Is dat niet zo, kan stap 3 overgeslagen worden.
 		 */
 		
-		
-		System.out.printf("Stap 2 of 3\n");
+		//System.out.println("bid?"+ticket.getBidOrAsk());
+		//System.out.println("price" + ticket.getPrice());
+		//System.out.println("bidhigh " + bidHigh[ticket.getOutcome()]);
+		System.out.println("--> Geen market deal");
+		System.out.print("\tKijk of bestaand bod slechter is");
 		if(	(ticket.getBidOrAsk()  == ASK && ticket.getPrice() > askLow[ticket.getOutcome()] ) ||
 			(ticket.getBidOrAsk()  == BID && ticket.getPrice() < bidHigh[ticket.getOutcome()]) )
 		{
@@ -121,9 +143,9 @@ public class OrderBook
 			 * resterende deel ervan) in het orderboek (wachtrij) geplaatst worden.
 			 */
 			
-			System.out.printf("ticket in orderBook proberen te stoppen\n");
+			System.out.println("--> Dit bod is slechter, voeg toe aan orderbook/userHT");
 			addTicketToOrderBookAndUserHashTable(ticket, userHashTable);
-			System.out.printf("ticket added to orderBook\n");
+			//System.out.printf("ticket added to orderBook\n");
 		} else
 		{
 			/*
@@ -133,12 +155,18 @@ public class OrderBook
 			 * 	een order van de andere orderboek-zijde. Dus bij een bid-bod van 75 cent, wordt eerst 
 			 * 	gecheckt of er een ask-bod van 75 cent of lager tegenover staat. 
 			 */
-			System.out.printf("order was beter, match proberen\n"); 
+			System.out.println("--> order was beter, match proberen");
+			System.out.print("\tKijken of vraag en aanbod elkaar tegenkomen");
+			int amount = ticket.getAmount();
 			while ( bidAskMeets(ticket) && ticket.getAmount() > 0)
 			{
 			 	ticket = doBidAskMeetsTransactions(ticket);	
+			 	System.out.println("match gemaakt");
 			}
-			System.out.printf("Order was beter, match gemaakt.\n ");
+			if(amount == ticket.getAmount())
+			{
+				System.out.println(" --> geen vraag/aanbod match");
+			}
 			/*
 			 * 	b. Als dat niet kan, of slechts een deel van de nieuwe order is op deze manier gematcht,
 			 * 	dan checkt de engine of er een match tot stand kan worden gebracht met anderen uit dezelfde
@@ -173,12 +201,19 @@ public class OrderBook
 				 * 	niet-vertegenwoordigde outcomes in 'onze pot'.
 				 */
 				
-				System.out.printf("tickets creeeren\n");
+				System.out.print("\tbidMatch proberen te vinden");
+				int oldAmount = ticket.getAmount();
 				while(bidMatchPresent(ticket) && ticket.getAmount() > 0 && ticket.getBidOrAsk() == BID)
 				{
+					System.out.println("er is een bid match");
 					ticket = doBidMatchTransactions(ticket);
 				}
-				System.out.printf("tickets gecreeerd\n");
+				if(oldAmount == ticket.getAmount())
+				{
+					System.out.println(" --> geen bidmatch gevonden");
+					
+				}
+				//System.out.printf("tickets gecreeerd\n");
 				/* 
 				 * 		ii. Voor de ask-zijde kan dat, als de optelsom van minimale bets (prijzen) van elke
 				 * 		outcome, optelt tot 100 cent of minder. Dus: user x is bereid 60 cent te betalen voor
@@ -190,16 +225,21 @@ public class OrderBook
 				 * 		en dat de optelsom van de minimale bets per uitkomst gelijk zijn of kleiner dan 100 cent.
 				 */
 				
-				System.out.printf("tickets in nemen");
+				System.out.print("\tAskMatch proberen te vinden");
+				oldAmount = ticket.getAmount();
 				while(askMatchPresent(ticket) && ticket.getAmount() > 0 && ticket.getBidOrAsk() == ASK)
 				{
 					ticket = doAskMatchTransactions(ticket);
 				}
 				
-				System.out.printf("tickets ingenomen");
+				if(oldAmount == ticket.getAmount())
+				{
+					System.out.println(" --> geen askMatch gevonden");
+					
+				}
 		}
 		//add remaining tickets to orderBook, and userHashTable
-		System.out.printf("adding remaining tickets to orderBook en hashtabel\n");
+		System.out.println("**** adding remaining tickets to orderBook en hashtabel\n");
 		addTicketToOrderBookAndUserHashTable(ticket, userHashTable);
 		System.out.printf("added remaining to orderBook en hashtabel");
 	}
@@ -305,22 +345,37 @@ public class OrderBook
 			Ticket ticket1 = ticket;
 			Ticket ticket2;
 			Ticket ticket3;
+			System.out.println("bh"+ bidHigh[2]);
+			System.out.println("blaaa" + ticket.getOutcome());
+			System.out.println("bla" + (ticket.getOutcome() + 1)%3);
 			if(bidHigh[(ticket.getOutcome() + 1)%3] != 0)
 			{
 				ticket2 = orderBook[bidHigh[(ticket.getOutcome() + 1)%3]][(ticket.getOutcome() + 1) % 3].front();
+				System.out.println("hierr?");
 			} else
 			{
-				ticket2 = new Ticket(ticket.getActivity(), "pot", (ticket.getOutcome() + 1)%3 , ticket.getPrice(), ticket.getAmount(), ticket.getBidOrAsk(), 1);
+			//	public Ticket(String activity, String userID, int outcome, int price, int amount, int bidOrAsk, int date)
+				
+				ticket2 = new Ticket(ticket1.getActivity(), "pot", (ticket1.getOutcome() + 1)%3 , ticket1.getPrice(), ticket1.getAmount(), ticket1.getBidOrAsk(), 1);
+				ticket2.setAmount(ticket1.getAmount());
+				
 			}
 			
 			
 			if(bidHigh[(ticket.getOutcome() + 2)%3] != 0)
 			{
 				ticket3 = orderBook[bidHigh[(ticket.getOutcome() + 2)%3]][(ticket.getOutcome() + 2) % 3].front();
+				System.out.println("kom ik hier?");
 			} else
 			{
+				System.out.println("kom ik h3ier?");
+				
 				ticket3 = new Ticket(ticket.getActivity(), "pot", (ticket.getOutcome() + 2)%3 , ticket.getPrice(), ticket.getAmount(), ticket.getBidOrAsk(), 1);
+				ticket3.setAmount(ticket1.getAmount());
 			}
+			System.out.println(ticket1.getAmount());
+			System.out.println(ticket2.getAmount());
+			System.out.println(ticket3.getAmount());
 			
 			int tradeAmount = getTradeAmount(ticket1, ticket2, ticket3);
 			
@@ -568,7 +623,13 @@ public class OrderBook
 	//if no matches can be made this function adds ticket to orderbook and userhashtable
 	public void addTicketToOrderBookAndUserHashTable(Ticket ticket, UserHashTable userHashTable)
 	{
+		//if(orderBook[ticket.getPrice()][ticket.getTicketIndex()].isEmpty())
+			{
+				//orderBook[ticket.getPrice()][ticket.getTicketIndex()] = new TicketArrayQueue();
+			}
+		
 		orderBook[ticket.getPrice()][ticket.getTicketIndex()].enqueue(ticket);
+		System.out.println("ticket aan orderboek toegevoegd");
 		userHashTable.addTicket(ticket);
 	}
 	

@@ -83,7 +83,9 @@ public class Ticket{
 		this.date = new GregorianCalendar(year, month, day, hour, minute, second);
 		//date.set(year,  month, day, hour, second, minute);
 		
-		System.out.println(this.date.getTime());
+		//System.out.println(this.date.getTime());
+		
+		this.type = "limit";
 		
 		lineScanner.close();
 	}
@@ -91,12 +93,12 @@ public class Ticket{
 	public Ticket(String activity, String userID, int outcome, int price, int amount, int bidOrAsk, int date)
 	{
 		this.activity = activity;
-		this.type = type;
+		//this.type = type;
 		this.userId = userID;
 		this.outcome = outcome;
 		this.price = price;
 		this.amount = amount;
-		this.amountLeft = this.amount;
+		//this.amountLeft = this.amount;
 		this.bidOrAsk = bidOrAsk;
 		this.date = new GregorianCalendar(date, date, date, date, date, date);
 	}
