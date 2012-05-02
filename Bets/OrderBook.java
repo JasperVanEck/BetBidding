@@ -66,6 +66,18 @@ public class OrderBook
 		return koers;
 	}
 	
+	public int getBuySellNowPrice(String bidOrAsk, int outcome)
+	{
+		int value;
+		if(bidOrAsk.equals("bid"))
+		{
+			value = this.bidHigh[outcome];
+		}else
+		{
+			value = this.askLow[outcome];
+		}
+		return value;
+	}
 	
 	//This function sets the advantage to first or last
 	public void setAdvantage(String advantage)
