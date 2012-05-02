@@ -3,11 +3,13 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 	public static int DEFAULT_INIT_CAPACITY = 32;
 	protected int front;
 	protected int rear;
+	protected int nItems;
 
 	public TicketArrayQueue(){
 		arr = new Ticket[DEFAULT_INIT_CAPACITY];
 		front = 0;
-		rear = 0;
+	    rear = -1;
+	    nItems = 0;
 	}
 
 	public TicketArrayQueue(int initCapacity){
@@ -17,21 +19,23 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 			arr = new Ticket[initCapacity];
 		}
 		front = 0;
-		rear = 0;
+		rear = -1;
+		nItems = 0;
 	}
 
 	public Ticket dequeue(){
-		Ticket frontElem = arr[front];
-		front++;
-		return frontElem;
+		Ticket frontElem = arr[front++];
+		nItems--;                      // one less item
+	    return frontElem;
 	}
 
 	public Ticket enqueue(Ticket elem){
 		ensureCapacity();
-		arr[rear++] = elem;
+		arr[++rear] = elem;
+		nItems++;
 		return elem;
 	}
-
+	
 	public void deleteTicket(Ticket ticket)
 	{
 		//iterate through tickets.
@@ -49,20 +53,22 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 	}
 	
 	protected void ensureCapacity(){
-		int size = size();
+		//int size = size();
 
-		if(rear >= size){
-			Ticket[] temparray = new Ticket[2*size];
-
-			for(int i = 0; i <= arr.length; i++){
+		if(rear == DEFAULT_INIT_CAPACITY)
+		{
+			DEFAULT_INIT_CAPACITY *=2;
+			Ticket[] temparray = new Ticket[2*DEFAULT_INIT_CAPACITY];
+			for(int i = front; i <= rear; i++)
+			{
 				temparray[i] = arr[i];
 			}
-
 			arr = temparray;
 		}
 	}
 
-	public Ticket front(){
+	public Ticket front()
+	{
 		return arr[front];
 	}
 
@@ -72,11 +78,13 @@ public class TicketArrayQueue extends Object implements TicketQueue{
 		return ticket;
 	}
 
-	public boolean isEmpty(){
-		return rear == 0;
+	public boolean isEmpty()    // true if queue is empty
+	{
+	   return (nItems==0);
 	}
-
-	public int size(){
-		return arr.length;
-	}
-}
+	
+	public int size()           // number of items in queue
+    {
+		return nItems;
+    }
+} 
