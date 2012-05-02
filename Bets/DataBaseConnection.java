@@ -3,7 +3,7 @@ import java.sql.*;
 public class DataBaseConnection
 {
 	private String dbms = "mysql";
-	private String serverName = "212.64.153.49";
+	private String serverName = "localhost"; //"database.betbidding.com";
 	private int portNumber = 3306;
 	private Connection conn;
 	private String userName = "user";
@@ -20,9 +20,66 @@ public class DataBaseConnection
 		}
 	}
 	
+	public void createBidHighAskLowTable() throws SQLException
+	{
+		String createTable = "CREATE TABLE IF NOT EXISTS bidhighasklow " +
+					"( id int(11) NOT NULL AUTO_INCREMENT, " +
+					" activity varchar(40) NOT NULL, " + 
+					" outcome_bid_0 tinyint(4) NOT NULL, " + 
+					" outcome_bid_1 tinyint(4) NOT NULL, " +
+					" outcome_bid_2 tinyint(4) NOT NULL, " +
+					" outcome_ask_0 tinyint(4) NOT NULL, " +
+					" outcome_ask_1 tinyint(4) NOT NULL, " +
+					" outcome_ask_2 tinyint(4) NOT NULL, " +
+					" PRIMARY KEY (id) " +
+					" )";
+		
+		Statement stmt = null;
+		try{
+			stmt = this.conn.createStatement();
+			stmt.executeUpdate(createTable);
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}finally
+		{
+			if(stmt != null)
+			{
+				stmt.close();
+			}
+		}
+	}
+	
+	public void updateBidHighAskLow(int[] askLow, int[] bidHigh, String activity, int id) throws SQLException
+	{
+		String updateTable = "update bidhighasklow " +
+					"set outcome_bid_0 = " + bidHigh[0] +
+					"outcome_bid_1 = " + bidHigh[1] + 
+					"outcome_bid_2 = " + bidHigh[2] + 
+					"outcome_ask_0 = " + askLow[0] + 
+					"outcome_ask_1 = " + askLow[1] + 
+					"outcome_ask_2 = " + askLow[2] + 
+					"where activity = '" + activity + "' " + 
+					"AND id = " + id;
+		Statement stmt = null;
+		try{
+			stmt = this.conn.createStatement();
+			stmt.executeUpdate(updateTable);
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}finally
+		{
+			if(stmt != null)
+			{
+				stmt.close();
+			}
+		}
+	}
+	
 	public void createOrderInputTable() throws SQLException
 	{
-		String createTable = "CREATE TABLE IF NOT EXISTS transactions" + 
+		String createTable = "CREATE TABLE IF NOT EXISTS transactions " + 
 					"( id int(11) NOT NULL AUTO_INCREMENT," +
 					" userid varchar(32) NOT NULL," + 
 					" date datetime NOT NULL," +
@@ -33,7 +90,7 @@ public class DataBaseConnection
 					" account_number varchar(36) NOT NULL," +
 					" transaction_details varchar(256) NOT NULL," + 
 					" match varchar(36) NOT NULL DEFAULT 0," +
-					" PRIMARY KEY (ID)" +
+					" PRIMARY KEY (id)" +
 					" ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 		
 		Statement stmt = null;
@@ -52,26 +109,52 @@ public class DataBaseConnection
 		}
 	}
 	
-	public void insertOrderInputRow()
+	public void insertOrderInputRow(Ticket ticket) throws SQLException
 	{
+		String insertRow = "insert into transactions " + 
+					"values ( " + ticket.getUserID() + ", '" + 
+					ticket.dateToString() + "', '" +
+					ticket.getActivity() + "', " +
+					ticket.getAmount() + ", " + 
+					"0" + ", '" + //addsubtract
+					"source" + "', '" + 
+					"account_number" + "', '" + 
+					"transaction_details" + "', '" + 
+					ticket.getType() + 
+					"') ";
 		
+		PreparedStatement pstmt = null;
+		try{
+			pstmt = conn.prepareStatement(insertRow);
+			pstmt.executeUpdate();
+			
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}finally
+		{
+			if(pstmt != null)
+			{
+				pstmt.close();
+			}
+		}
 	}
 	
 	public void createOrderHandledTable(String activity) throws SQLException
 	{
 		String createTable = 
 		"CREATE TABLE IF NOT EXISTS "+ activity +"_handled (" +
-		"id int(11) NOT NULL DEFAULT 0," +
-		"userid varchar(32) NOT NULL," +
-		"party int(15) NOT NULL," +
-		"bet tinyint(4) unsigned NOT NULL," +
-		"datum datetime NOT NULL," +
-		"datum_handled datetime NOT NULL DEFAULT 0000-00-00 00:00:00," +
-		"betid int(11) NOT NULL DEFAULT 0," +
-		"trade_user int(11) NOT NULL DEFAULT 0," +
-		"tickets int(11) unsigned NOT NULL," + 
-		"buysell varchar(10) NOT NULL," +
-		"bet_category tinyint(4) NOT NULL DEFAULT 0" +
+		"id int(11) NOT NULL AUTO_INCREMENT, " +
+		"userid varchar(32) NOT NULL, " +
+		"party int(15) NOT NULL, " +
+		"bet tinyint(4) unsigned NOT NULL, " +
+		"datum datetime NOT NULL, " +
+		"datum_handled datetime NOT NULL DEFAULT 0000-00-00 00:00:00, " +
+		"betid int(11) NOT NULL DEFAULT 0, " +
+		"trade_user int(11) NOT NULL DEFAULT 0, " +
+		"tickets int(11) unsigned NOT NULL, " + 
+		"buysell varchar(10) NOT NULL, " +
+		"bet_category tinyint(4) NOT NULL DEFAULT 0 " +
 		") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 		
 		Statement stmt = null;
@@ -86,6 +169,38 @@ public class DataBaseConnection
 			if(stmt != null)
 			{
 				stmt.close();
+			}
+		}
+	}
+	
+	public void insertOrderHandled(Ticket ticket) throws SQLException
+	{
+		int tickets = (ticket.getAmount() - ticket.getAmountLeft());
+		String insertRow = "insert into " + ticket.getActivity() + "_handled " +
+					" values( '" + ticket.getUserID() + "', " +
+					"0" + ", " + //party
+					ticket.getPrice() + ", " +
+					ticket.dateToString() + ", " +  
+					" 0000-00-00 00:00:00" + ", " + //date handled
+					" 0 " + ", " + //betid
+					tickets + ", '" +
+					ticket.getBidOrAsk() + "', " +
+					ticket.getOutcome() +
+					" )";
+		
+		PreparedStatement pstmt = null;
+		try{
+			pstmt = conn.prepareStatement(insertRow);
+			pstmt.executeUpdate();
+			
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}finally
+		{
+			if(pstmt != null)
+			{
+				pstmt.close();
 			}
 		}
 	}
@@ -118,9 +233,30 @@ public class DataBaseConnection
 		}
 	}
 	
-	public void updateKoersDB()
+	public void updateKoersDB(String activity, int[] koers, String date) throws SQLException
 	{
+		String insertRow = 
+			"insert into " + activity + "_koers" +
+			"values( '" + date + "'," + 
+			koers[0] + ", " +
+			koers[1] + ", " +
+			koers[2] + ")";
 		
+		PreparedStatement pstmt = null;
+		try{
+			pstmt = conn.prepareStatement(insertRow);
+			pstmt.executeUpdate();
+			
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}finally
+		{
+			if(pstmt != null)
+			{
+				pstmt.close();
+			}
+		}
 	}
 	
 	public Connection getConnection() throws SQLException 

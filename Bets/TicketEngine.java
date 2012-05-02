@@ -23,6 +23,8 @@ public class TicketEngine extends Thread implements GearmanFunction
 		
 		GearmanServer server = gearman.createGearmanServer("212.64.153.49", 4730);
 		
+		String function = args[0] + "_order";
+		
 		worker.addFunction("order", new TicketEngine());
 		
 		worker.addServer(server);

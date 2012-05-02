@@ -18,6 +18,7 @@ public class OrderBook
 	private final static int BID = 0;
 	private final static int ASK = 1;
 	
+	DataBaseConnection dbConn;
 	
 	private String ADVANTAGE = "first";
 	
@@ -40,7 +41,7 @@ public class OrderBook
 		}
 		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
-		
+		this.dbConn = new DataBaseConnection();
 	}
 	
 	///This function returns the activity of this orderbook
