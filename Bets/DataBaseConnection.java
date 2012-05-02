@@ -9,6 +9,9 @@ public class DataBaseConnection
 	private String userName = "user";
 	private String password = "password";
 	
+	/**
+	 * DataBaseConnection constructor, takes no argument.
+	 */
 	public DataBaseConnection()
 	{
 		try{
@@ -20,6 +23,10 @@ public class DataBaseConnection
 		}
 	}
 	
+	/**
+	 * Creates the bidhighasklow table.
+	 * Also enters the first entry, so the id can be returned and used in future, updates.
+	 */
 	public int createBidHighAskLowTable(int[] askLow, int[] bidHigh, String activity) throws SQLException
 	{
 		int id = 0;
@@ -76,10 +83,11 @@ public class DataBaseConnection
 			System.out.println(e.getMessage());
 		}finally
 		{
-			if(stmt != null || pstmt != null)
+			if(stmt != null || pstmt != null || stmt2 != null)
 			{
 				stmt.close();
 				pstmt.close();
+				stmt2.close();
 			}
 			this.conn.setAutoCommit(true);
 			return id;
@@ -97,18 +105,18 @@ public class DataBaseConnection
 					"outcome_ask_2 = " + askLow[2] + 
 					"where activity = '" + activity + "' " + 
 					"AND id = " + id;
-		PreparedStatement pstmt = null;
+		Statement stmt = null;
 		try{
-			pstmt = this.conn.prepareStatement(updateTable);
-			pstmt.executeUpdate();
+			stmt = this.conn.createStatement();
+			stmt.executeUpdate(updateTable);
 		}catch(SQLException e)
 		{
 			System.out.println(e.getMessage());
 		}finally
 		{
-			if(pstmt != null)
+			if(stmt != null)
 			{
-				pstmt.close();
+				stmt.close();
 			}
 		}
 	}
@@ -145,7 +153,7 @@ public class DataBaseConnection
 		}
 	}
 	
-	public void insertOrderInputRow(Ticket ticket) throws SQLException
+	public void insertNewOrder(Ticket ticket) throws SQLException
 	{
 		String insertRow = "insert into transactions " + 
 					"values ( " + ticket.getUserID() + ", '" + 
@@ -159,19 +167,19 @@ public class DataBaseConnection
 					ticket.getType() + 
 					"') ";
 		
-		PreparedStatement pstmt = null;
+		Statement stmt = null;
 		try{
-			pstmt = conn.prepareStatement(insertRow);
-			pstmt.executeUpdate();
+			stmt = conn.createStatement();
+			stmt.executeUpdate(insertRow);
 			
 		}catch(SQLException e)
 		{
 			System.out.println(e.getMessage());
 		}finally
 		{
-			if(pstmt != null)
+			if(stmt != null)
 			{
-				pstmt.close();
+				stmt.close();
 			}
 		}
 	}
@@ -209,7 +217,7 @@ public class DataBaseConnection
 		}
 	}
 	
-	public void insertOrderHandled(Ticket ticket) throws SQLException
+	public void insertOrderHandled(Ticket ticket, int activityID) throws SQLException
 	{
 		int tickets = (ticket.getAmount() - ticket.getAmountLeft());
 		String insertRow = "insert into " + ticket.getActivity() + "_handled " +
@@ -218,30 +226,30 @@ public class DataBaseConnection
 					ticket.getPrice() + ", " +
 					ticket.dateToString() + ", " +  
 					" 0000-00-00 00:00:00" + ", " + //date handled
-					" 0 " + ", " + //betid
+					activityID + ", " + //betid
 					tickets + ", '" +
 					ticket.getBidOrAsk() + "', " +
 					ticket.getOutcome() +
 					" )";
 		
-		PreparedStatement pstmt = null;
+		Statement stmt = null;
 		try{
-			pstmt = conn.prepareStatement(insertRow);
-			pstmt.executeUpdate();
+			stmt = conn.createStatement();
+			stmt.executeUpdate(insertRow);
 			
 		}catch(SQLException e)
 		{
 			System.out.println(e.getMessage());
 		}finally
 		{
-			if(pstmt != null)
+			if(stmt != null)
 			{
-				pstmt.close();
+				stmt.close();
 			}
 		}
 	}
 	
-	public void createKoersDB(String activity) throws SQLException
+	public void createKoersTable(String activity) throws SQLException
 	{
 		String createTable = 
 			"CREATE TABLE IF NOT EXISTS " + activity + "_koers (" +
@@ -269,7 +277,7 @@ public class DataBaseConnection
 		}
 	}
 	
-	public void updateKoersDB(String activity, int[] koers, String date) throws SQLException
+	public void insertKoersTable(String activity, int[] koers, String date) throws SQLException
 	{
 		String insertRow = 
 			"insert into " + activity + "_koers" +
@@ -278,19 +286,19 @@ public class DataBaseConnection
 			koers[1] + ", " +
 			koers[2] + ")";
 		
-		PreparedStatement pstmt = null;
+		Statement stmt = null;
 		try{
-			pstmt = conn.prepareStatement(insertRow);
-			pstmt.executeUpdate();
+			stmt = conn.createStatement();
+			stmt.executeUpdate(insertRow);
 			
 		}catch(SQLException e)
 		{
 			System.out.println(e.getMessage());
 		}finally
 		{
-			if(pstmt != null)
+			if(stmt != null)
 			{
-				pstmt.close();
+				stmt.close();
 			}
 		}
 	}

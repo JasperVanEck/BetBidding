@@ -1,6 +1,7 @@
 import java.util.GregorianCalendar;
+import java.sql.*;
 
-public class OrderBook extends Thread
+public class OrderBook
 {
 	/*
 	 * 100x6 array filled with queues, these queues are filled with tickets?
@@ -14,6 +15,8 @@ public class OrderBook extends Thread
 	private int[] askLow = new int[3];
 	private int[] bidHigh = new int[3];
 	private String activity;
+	private int activityID;
+	private int[] koers = new int[3];
 	
 	private final static int BID = 0;
 	private final static int ASK = 1;
@@ -30,6 +33,7 @@ public class OrderBook extends Thread
 		{
 			this.askLow[i] = 100;
 			this.bidHigh[i] = 0;
+			this.koers[i] = 0;
 		}
 		for(int i = 0; i < 6; i++)
 		{
@@ -41,7 +45,16 @@ public class OrderBook extends Thread
 		}
 		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
-		dbConn = new DataBaseConnection();
+		try{
+		this.dbConn = new DataBaseConnection();
+		this.activityID = this.dbConn.createBidHighAskLowTable(this.askLow, this.bidHigh, this.activity);
+		this.dbConn.createOrderInputTable();
+		this.dbConn.createOrderHandledTable(this.activity);
+		this.dbConn.createKoersTable(this.activity);
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	///This function returns the activity of this orderbook
@@ -79,21 +92,44 @@ public class OrderBook extends Thread
 			System.out.println("advantage moet first of last zijn"); 
 		}
 	}
+	/*
+	//This method is for new threads which carry out the database actions.
+	public void run(Ticket ticket, String type)
+	{
+		switch(type)
+		{
+			case "newOrder":
+				this.dbConn.insertNewOrder(ticket);
+				break;
+			case "handledOrder":
+				this.dbConn.insertOrderHandled(ticket, this.activityID);
+				break;
+			case "":
+				
+				break;
+			default: break;
+		}
+	}
+	
+	//Overloaded new thread for the Koers updates.
+	public void run(String type, int[] koers)
+	{
+		if(type.equals("koersUpdate"))
+		{
+			this.dbConn.insertKoersTable(this.activity, koers, "date");
+		}
+	}
 	
 	public void run()
 	{
-		
+		this.dbConn.updateBidHighAskLow(this.askLow, this.bidHigh, this.activity, this.activityID);
 	}
+*/
 	//This function processes an order
 	public void processTicket(Ticket ticket)
 	{
-		//orderBook object voor het runnen van een thread;)
-		//met thread.start() kan je een nieuwe thread starten. 
-		//Hij begint dan in de nieuwe thread met de method run(), 
-		//vanuit daar kan je dan de database connections aanroepen. 
-		//Dan kan ie gewoon lekker verder lopen met de ticket handling.
-		//heb de run method maar ff hierboven gezet.
-		OrderBook thread = new OrderBook(ticket.getActivity());
+		try{
+		this.dbConn.insertNewOrder(ticket);
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
@@ -297,8 +333,10 @@ public class OrderBook extends Thread
 		
 		System.out.println("bid "+ ": "+ getKoers("bid"));
 		System.out.println("ask "+ ": "+ getKoers("ask"));
-		
-		
+		}catch(SQLException e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 
 	public Ticket doMarketTransactions(Ticket ticket1)
