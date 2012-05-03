@@ -10,6 +10,7 @@ public class OrderBook
 	 * -	-		-	-		-	-
 	 */
 	private TicketArrayQueue[][] orderBook = new TicketArrayQueue[101][6];
+	private int[][] amountArray = new int[101][6];
 	
 	private UserHashTable userHashTable;
 	private int[] askLow = new int[3];
@@ -305,6 +306,8 @@ public class OrderBook
 			ticket1.decreaseAmount(tradeAmount);
 			System.out.println(transAction(ticket2, tradeAmount));
 			ticket2.decreaseAmount(tradeAmount);
+			amountArray[ticket2.getPrice()][ticket2.getTicketIndex()] -= tradeAmount;
+	 		
 		} else
 		//if(ticket1.getOutcome() == ASK)
 		{
@@ -314,6 +317,8 @@ public class OrderBook
 			ticket1.decreaseAmount(tradeAmount);
 			System.out.println(transAction(ticket2, tradeAmount));
 			ticket2.decreaseAmount(tradeAmount);
+			amountArray[ticket2.getPrice()][ticket2.getTicketIndex()] -= tradeAmount;
+	 		
 		} 
 		return ticket1;
 	}
@@ -384,7 +389,11 @@ public class OrderBook
  		
  		ticket1.decreaseAmount(tradeAmount);
 		ticket2.decreaseAmount(tradeAmount);
+		amountArray[ticket2.getPrice()][ticket2.getTicketIndex()] -= tradeAmount;
+ 		
  		ticket3.decreaseAmount(tradeAmount);
+ 		amountArray[ticket3.getPrice()][ticket3.getTicketIndex()] -= tradeAmount;
+ 		
 		
 		//delete amount of ticket2&3 in userHashTable
 		userHashTable.deleteTicket(orderBook[askLow[ticket2.getOutcome()]][ticket2.getTicketIndex()].front(), tradeAmount);
@@ -395,6 +404,38 @@ public class OrderBook
 		removeTicketAmountFromOrderBook(ticket3);
 		
 		return ticket;
+	}
+	
+	public int marketDeal(Ticket ticket)
+	{
+		int total = 0;
+		int Amount = ticket.getAmount();
+		int BidOrAsk = ticket.getBidOrAsk();
+		int ticketIndex = ticket.getTicketIndex();
+		
+		if(BidOrAsk == BID)
+		{
+			int count = 0;
+			while(Amount > 0 && count < 100)
+			{
+				total += Math.min(amountArray[count][ticketIndex + 1], Amount) * count;
+				Amount -=- Math.min(amountArray[count][ticketIndex + 1], Amount);
+				count++;
+			}
+		}
+		
+		if(BidOrAsk == ASK)
+		{
+			int count = 100;
+			while(Amount > 0 && count > 0)
+			{
+				total += Math.min(amountArray[count][ticketIndex - 1], Amount) * count;
+				Amount -=- Math.min(amountArray[count][ticketIndex - 1], Amount);
+				count--;
+			}
+		}
+		
+		return total;
 	}
 	
 	//This function processes the bidMatch transactions
@@ -460,6 +501,8 @@ public class OrderBook
 			//if not tickets from "pot", delete from userHashTable and orderBook
 			if(!ticket2.getUserID().equals("pot"))
 			{
+				amountArray[ticket2.getPrice()][ticket2.getTicketIndex()] -= tradeAmount;
+		 		
 				//delete amount of ticket2 in userHashTable
 				userHashTable.deleteTicket(orderBook[bidHigh[ticket2.getOutcome()]][ticket2.getTicketIndex()].front(), tradeAmount);
 	 		
@@ -470,6 +513,8 @@ public class OrderBook
 			//if not tickets from "pot", delete from userHashTable and orderBook
 			if(!ticket3.getUserID().equals("pot"))
 			{
+				amountArray[ticket3.getPrice()][ticket3.getTicketIndex()] -= tradeAmount;
+		 		
 				//delete amount of ticket3 in userHashTable
 				userHashTable.deleteTicket(orderBook[bidHigh[ticket3.getOutcome()]][ticket3.getTicketIndex()].front(), tradeAmount);
 	 		
@@ -596,6 +641,7 @@ public class OrderBook
 			
 	 		System.out.println(transAction(ticket2, tradeAmount));
 	 		ticket2.decreaseAmount(tradeAmount);
+	 		amountArray[ticket2.getPrice()][ticket2.getTicketIndex()] -= tradeAmount;
 	 		
 	 		//delete amount of ticket2 in userHashTable
 	 		userHashTable.deleteTicket(orderBook[bidHigh[ticket.getOutcome()]][ticket.getTicketIndex() -1].front(), tradeAmount);
@@ -627,7 +673,7 @@ public class OrderBook
 	 		
 	 		System.out.println(transAction(ticket2, tradeAmount));
 	 		ticket2.decreaseAmount(tradeAmount);
-	 		
+	 		amountArray[ticket2.getPrice()][ticket2.getTicketIndex()] -= tradeAmount;
 	 		//delete amount of ticket2 in userHashTable
 	 		userHashTable.deleteTicket(orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() +1].front(), tradeAmount);
 	 		
@@ -737,6 +783,7 @@ public class OrderBook
 	public void addTicketToOrderBookAndUserHashTable(Ticket ticket, UserHashTable userHashTable)
 	{
 		orderBook[ticket.getPrice()][ticket.getTicketIndex()].enqueue(ticket);
+		amountArray[ticket.getPrice()][ticket.getTicketIndex()] += ticket.getAmount();
 		if(ticket.getBidOrAsk() == BID)
 		{
 			setNewBidHigh(ticket);
@@ -753,6 +800,7 @@ public class OrderBook
 	public void deleteTicket(Ticket ticket)
 	{
 		int askOrBidPrice = userHashTable.checkUserHasTicketAlready(ticket);
+		amountArray[askOrBidPrice][ticket.getTicketIndex()] -= ticket.getAmount();
 		
 		//if this ticket is the only one in this queue. set new bidHigh or askLow and delete Ticket form queue
 		if(orderBook[askOrBidPrice][ticket.getTicketIndex()].size()==1)
@@ -761,6 +809,7 @@ public class OrderBook
 		} else //not only one in row so only delete from queue
 		{
 			orderBook[askOrBidPrice][ticket.getTicketIndex()].deleteTicket(ticket); 
+			amountArray[askOrBidPrice][ticket.getTicketIndex()] -= ticket.getAmount();
 		}
 		
 		//always delete from userHashTable
