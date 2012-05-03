@@ -27,7 +27,7 @@ public class TicketEngine implements GearmanFunction
 		
 		String function = args[0] + "_order";
 		
-		worker.addFunction("order", new TicketEngine());
+		worker.addFunction(function, new TicketEngine());
 		
 		worker.addServer(server);
 	}
