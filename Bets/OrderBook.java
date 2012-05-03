@@ -128,8 +128,7 @@ public class OrderBook
 	//This function processes an order
 	public void processTicket(Ticket ticket)
 	{
-		try{
-		//this.dbConn.insertNewOrder(ticket);
+		
 		/*
 		 * 1. Als deze gebruiker al een bod in het orderboek heeft staan op dezelfde activiteit, 
 		 * dezelfde uitkomst en hetzelfde type (bid of ask), dan vervangt deze nieuwe order de al 
@@ -142,7 +141,7 @@ public class OrderBook
 		//System.out.println("koers ask: "+ getKoers("ask"));
 		try{
 			
-		    this.dbConn.insertNewOrder(ticket);
+		    //this.dbConn.insertNewOrder(ticket);
 		System.out.print("\tStap 1, kijken of user al ticket heeft");
 		int test = 0;
 		if(userHashTable.checkUserHasTicketAlready(ticket) != -1)
@@ -227,7 +226,8 @@ public class OrderBook
 			int amount = ticket.getAmount();
 			while ( bidAskMeets(ticket) && ticket.getAmount() > 0)
 			{
-			 	ticket = doBidAskMeetsTransactions(ticket);	
+			 	System.out.println("doBidAskMeetsTransactions proberen.");
+			 	ticket = doBidAskMeetsTransactions(ticket);
 			 	System.out.println("match gemaakt");
 			}
 			//System.out.println("koers bid: "+ getKoers("bid"));
@@ -324,14 +324,16 @@ public class OrderBook
 					System.out.println(" --> geen askMatch gevonden");
 					
 				}
+		
+				//add remaining tickets to orderBook, and userHashTable
+				if(ticket.getAmount() > 0)
+				{
+					System.out.println("\t**** rest van tickets proberen aan orderBook en UserHT toevoegen");
+					addTicketToOrderBookAndUserHashTable(ticket, userHashTable);
+					System.out.println("\t**** rest van tickets toegevoegd");
+				}
 		}
-		//add remaining tickets to orderBook, and userHashTable
-		if(ticket.getAmount() > 0)
-		{
-			System.out.println("\t**** rest van tickets proberen aan orderBook en UserHT toevoegen");
-			addTicketToOrderBookAndUserHashTable(ticket, userHashTable);
-			System.out.println("\t**** rest van tickets toegevoegd");
-		}
+		
 		System.out.println("********************************************");
 		System.out.println("Ticket processed");
 		System.out.println("********************************************");
@@ -712,6 +714,7 @@ public class OrderBook
 	 			orderBook[askLow[ticket.getOutcome()]][ticket.getTicketIndex() +1].editFront(ticket2);
 		 	}
 	 	}
+	 	System.out.println("ik kom tot aan t eind.");
 	 	return ticket;
 	}
 	

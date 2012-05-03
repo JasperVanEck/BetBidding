@@ -21,6 +21,17 @@ public class DataBaseConnection
 		}
 	}
 	
+	public void createActivitiesSearchTable() throws SQLException
+	{
+		
+		
+	}
+	
+	public void updateActivitiesSearchTable() throws SQLException
+	{
+		
+	}
+	
 	/**
 	 * Creates the bidhighasklow table.
 	 * Also enters the first entry, so the id can be returned and used in future, updates.
