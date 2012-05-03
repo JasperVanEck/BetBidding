@@ -6,8 +6,6 @@ public class DataBaseConnection
 	private String serverName = "localhost"; //"database.betbidding.com";
 	private int portNumber = 3306;
 	private Connection conn;
-	private String userName = "user";
-	private String password = "password";
 	
 	/**
 	 * DataBaseConnection constructor, takes no argument.
