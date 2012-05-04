@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Properties;
 
 public class DataBaseConnection
 {
@@ -6,6 +7,8 @@ public class DataBaseConnection
 	private String serverName = "localhost"; //"database.betbidding.com";
 	private int portNumber = 3306;
 	private Connection conn;
+	private String userName = "molen";
+	private String password = "170782";
 	
 	/**
 	 * DataBaseConnection constructor, takes no argument.
@@ -315,17 +318,17 @@ public class DataBaseConnection
 	public Connection getConnection() throws SQLException 
 	{
 		Connection conn = null;
-		//Properties connectionProps = new Properties();
-		//connectionProps.put("user", this.userName);
-		//connectionProps.put("password", this.password);
+		Properties connectionProps = new Properties();
+		connectionProps.put("user", this.userName);
+		connectionProps.put("password", this.password);
 		
 		if (this.dbms.equals("mysql")) 
 		{
 			conn = DriverManager.getConnection(
 				"jdbc:" + this.dbms + "://" +
 				this.serverName +
-				":" + this.portNumber + "/");//,
-				//connectionProps);
+				":" + this.portNumber + "/",
+				connectionProps);
 		}
 		System.out.println("Connected to database");
 		return conn;

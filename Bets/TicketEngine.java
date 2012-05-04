@@ -27,7 +27,7 @@ public class TicketEngine implements GearmanFunction
 		
 		String function = args[0] + "_order";
 		
-		worker.addFunction(function, new TicketEngine());
+		worker.addFunction("order", new TicketEngine());
 		
 		worker.addServer(server);
 	}
@@ -45,7 +45,7 @@ public class TicketEngine implements GearmanFunction
 		String input = new String(data);
 		System.out.printf(input + "\n");
 		Ticket ticket = new Ticket(input);
-		System.out.printf("Ticket is aangemaakt! \n");
+		System.out.printf("Ticket is aangemaakt!" + ticket.getType() + "\n");
 		this.orderBook.processTicket(ticket);
 		System.out.printf(ticket.getType() + " verwerkt\n");
 		return data;

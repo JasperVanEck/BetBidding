@@ -44,9 +44,8 @@ public class OrderBook
 				
 			}
 		}
-		//orderBook[2][2] = new TicketArrayQueue();
 		this.userHashTable = new UserHashTable();
-		/*
+		
 		try{
 			this.dbConn = new DataBaseConnection();
 
@@ -58,7 +57,7 @@ public class OrderBook
 			{
 				System.out.println(e.getMessage());
 			}
-			*/
+			
 	}
 	
 	///This function returns the activity of this orderbook
@@ -96,39 +95,7 @@ public class OrderBook
 			System.out.println("advantage moet first of last zijn"); 
 		}
 	}
-	/*
-	//This method is for new threads which carry out the database actions.
-	public void run(Ticket ticket, String type)
-	{
-		switch(type)
-		{
-			case "newOrder":
-				this.dbConn.insertNewOrder(ticket);
-				break;
-			case "handledOrder":
-				this.dbConn.insertOrderHandled(ticket, this.activityID);
-				break;
-			case "":
-				
-				break;
-			default: break;
-		}
-	}
-	
-	//Overloaded new thread for the Koers updates.
-	public void run(String type, int[] koers)
-	{
-		if(type.equals("koersUpdate"))
-		{
-			this.dbConn.insertKoersTable(this.activity, koers, "date");
-		}
-	}
-	
-	public void run()
-	{
-		this.dbConn.updateBidHighAskLow(this.askLow, this.bidHigh, this.activity, this.activityID);
-	}
-*/
+
 	//This function processes an order
 	public void processTicket(Ticket ticket)
 	{
@@ -140,9 +107,9 @@ public class OrderBook
 		 * die nog niets in het orderboek - doorlopen.
 		 */
 		//First check if user hasn't already this ticket. Then the already existing ticket must be deleted
-		//try{
-		//
-		//    this.dbConn.insertNewOrder(ticket);
+		try{
+		
+		this.dbConn.insertNewOrder(ticket);
 		System.out.println("KOERS");
 		System.out.println("bid "+ ": "+ getKoers("bid"));
 		System.out.println("ask "+ ": "+ getKoers("ask"));
@@ -174,6 +141,7 @@ public class OrderBook
 			while(marketMatchPresent(ticket))
 			{
 				ticket = doBidAskMeetsTransactions(ticket);
+				
 			}
 		} else
 		
@@ -252,6 +220,7 @@ public class OrderBook
 				while(ticket.getBidOrAsk() == BID && ticket.getAmount() > 0 && bidMatchPresent(ticket)  )
 				{
 					ticket = doBidMatchTransactions(ticket);
+					
 				}
 	
 				/* 
@@ -280,15 +249,12 @@ public class OrderBook
 		System.out.println("Ticket processed");
 		System.out.println("********************************************");
 		
-		//}catch(SQLException e)
-	 	// 	
-	   // {
-		
-	     //System.out.println(e.getMessage());
-	 	 	
-	    //}
-		
-
+		dbConn.updateBidHighAskLow(this.askLow, this.bidHigh, this.activity, this.activityID);
+		dbConn.insertKoersTable(this.activity, this.koers, ticket.dateToString());
+		}catch(SQLException e)
+		{
+		System.out.println(e.getMessage());
+		}
 	}
 
 	public Ticket doMarketTransactions(Ticket ticket1)

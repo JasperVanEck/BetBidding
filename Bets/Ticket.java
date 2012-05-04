@@ -85,7 +85,8 @@ public class Ticket{
 		
 		//System.out.println(this.date.getTime());
 		
-		this.type = "limit";
+		lineScanner.next(); lineScanner.next(); lineScanner.next(); lineScanner.next();lineScanner.next();
+		this.type = lineScanner.next();
 		
 		lineScanner.close();
 	}
